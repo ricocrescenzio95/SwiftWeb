@@ -1,13 +1,11 @@
 import SwiftWeb
 import JavaScriptKit
 
-// Test minimale per V2 Renderer
-
 @main
 @Component
 struct TestApp: App {
-  @State var isVisible = false
-  @State var items = (1...100).map(\.self)
+  @State var isVisible: Bool = false
+  @State var items: [Int] = (1...5).map(\.self)
   
   var content: some Node {
     html {
@@ -53,7 +51,7 @@ struct TestApp: App {
 
         div(.class("box")) {
           h2 { "Event Handler Test" }
-          p { "Clicca il bottone e guarda la console:" }
+          CounterView()
           button { "Test Click" }
             .onClick {
               print("🎉 Event handler funziona!")
@@ -100,5 +98,25 @@ struct TestApp: App {
         }
       }
     }
+  }
+}
+
+@Component
+struct CounterView {
+  @State var count: Int
+  
+  @HTMLBuilder
+  var content: some Node {
+    
+      button { "-" }
+        .onClick {
+          self.count -= 1
+        }
+      "Count: \(count)"
+      button { "+" }
+        .onClick {
+          self.count += 1
+        }
+    
   }
 }

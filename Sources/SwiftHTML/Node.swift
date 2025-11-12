@@ -49,15 +49,6 @@ extension Float: Node {
   public var content: some Node { String(self) }
 }
 
-extension Optional: Node where Wrapped: Node {
-  public var content: some Node {
-    switch self {
-    case .some(let wrapped): wrapped.content
-    case .none: _EmptyNode()
-    }
-  }
-}
-
 extension Never: Node {
   public var content: some Node { fatalError("Never cannot be used") }
 }
@@ -82,8 +73,12 @@ public struct HTMLBuilder {
   public static func buildEither<First: Node, Second: Node>(second component: Second) -> _EitherNode<First, Second> {
     .second(component)
   }
-  public static func buildOptional(_ component: (some Node)?) -> (some Node)? {
-    component
+  public static func buildOptional<Wrapped: Node>(_ component: Wrapped?) -> _EitherNode<Wrapped, some Node> {
+    if let component {
+      _EitherNode<Wrapped, _EmptyNode>.first(component)
+    } else {
+      _EitherNode<Wrapped, _EmptyNode>.second(_EmptyNode())
+    }
   }
   public static func buildFinalResult(_ component: some Node) -> some Node {
     component

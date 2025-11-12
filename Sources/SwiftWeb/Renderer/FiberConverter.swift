@@ -149,16 +149,6 @@ struct FiberConverter {
     }
   }
 
-  // MARK: - Optional
-
-  func convert<Wrapped: Node>(
-    _ optional: Wrapped?,
-    lane: Lane
-  ) -> Fiber? {
-    guard let wrapped = optional else { return nil }
-    return convert(wrapped, lane: lane)
-  }
-
   // MARK: - ForEach
 
   func convert<Data: RandomAccessCollection, ID: Hashable, Content: Node>(
@@ -225,12 +215,6 @@ extension _EitherNode: FiberConvertible {
   }
 }
 
-extension Optional: FiberConvertible where Wrapped: Node {
-  func convert(using converter: FiberConverter, lane: Lane) -> Fiber? {
-    converter.convert(self, lane: lane)
-  }
-}
-
 extension ForEach: FiberConvertible {
   func convert(using converter: FiberConverter, lane: Lane) -> Fiber? {
     converter.convert(self, lane: lane)
@@ -239,6 +223,6 @@ extension ForEach: FiberConvertible {
 
 extension _EmptyNode: FiberConvertible {
   func convert(using converter: FiberConverter, lane: Lane) -> Fiber? {
-    nil
+    .init(tag: .hostText, type: "")
   }
 }

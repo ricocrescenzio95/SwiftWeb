@@ -3,5 +3,8 @@ import SwiftSyntaxMacros
 
 @main
 struct Macros: CompilerPlugin {
-  var providingMacros: [Macro.Type] = [ComponentMacro.self]
+  var providingMacros: [Macro.Type] = [
+    ComponentMacro.self,
+    StateMacro.self,
+  ]
 }

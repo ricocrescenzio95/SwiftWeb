@@ -16,6 +16,10 @@ public protocol StateBindable: AnyObject {
 @attached(extension, conformances: ComponentNode, names: named(__bindStorage))
 public macro Component() = #externalMacro(module: "SwiftHTMLMacros", type: "ComponentMacro")
 
+@attached(accessor)
+@attached(peer, names: prefixed(_), prefixed(`$`))
+public macro State() = #externalMacro(module: "SwiftHTMLMacros", type: "StateMacro")
+
 final class StateBox {
   weak var fiber: Fiber?
   var stateName: String?
@@ -33,15 +37,14 @@ final class StateBox {
   }
 }
 
-@propertyWrapper
 public struct State<Value> {
   var box: StateBox
 
   public init(wrappedValue: Value) {
     box = .init(wrappedValue)
   }
-
-  public var wrappedValue: Value {
+  
+  public var value: Value {
     get { box.value as! Value }
     nonmutating set {
       guard let fiber = box.fiber, let renderer else {
@@ -54,9 +57,9 @@ public struct State<Value> {
   
   public var projectedValue: Binding<Value> {
     .init {
-      wrappedValue
+      value
     } set: {
-      wrappedValue = $0
+      value = $0
     }
   }
 }

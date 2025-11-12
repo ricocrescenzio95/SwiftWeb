@@ -94,35 +94,30 @@ public final class Renderer {
     root.current = finishedWork
   }
 
+  // TODO: MUST FIX
   /// Trigger a re-render when state changes
-  /// Re-renders the entire app from root to ensure correctness
+  /// Re-renders starting from the component that owns the changed state
   func scheduleStateUpdate(from fiber: Fiber) {
-    print("🔄 [State Update] Starting full app re-render...")
+    print("🔄 [State Update] Starting component re-render from fiber: \(fiber.type)")
 
-    // Get the root fiber
-    guard let rootFiber = root.current else {
-      print("❌ [State Update] No root fiber")
+    // Find the component fiber (the fiber passed should be the component itself)
+    guard fiber.isComponent else {
+      print("❌ [State Update] Fiber is not a component")
       return
     }
 
-    // Find the app component (first child of root)
-    guard let appFiber = rootFiber.child else {
-      print("❌ [State Update] No app fiber")
-      return
-    }
-
-    // Get the app component
-    guard let appComponent = appFiber.sourceNode as? any ComponentNode else {
-      print("❌ [State Update] App has no sourceNode")
+    // Get the component from the fiber
+    guard let component = fiber.sourceNode as? any ComponentNode else {
+      print("❌ [State Update] Fiber has no component sourceNode")
       return
     }
 
     // Re-bind state to ensure it reads the updated values
-    appComponent.__bindStorage(with: appFiber)
+    component.__bindStorage(with: fiber)
 
-    // Regenerate the app's content with the NEW state
-    print("🔄 [State Update] Regenerating app content...")
-    let newContent = appComponent.content
+    // Regenerate the component's content with the NEW state
+    print("🔄 [State Update] Regenerating component content...")
+    let newContent = component.content
 
     // Convert to fiber tree
     guard let newTree = reconciler.converter.convert(newContent, lane: .defaultLane) else {
@@ -130,25 +125,26 @@ public final class Renderer {
       return
     }
 
-    // Reconcile from root
-    print("🔄 [State Update] Reconciling from root...")
-    let workInProgress = reconciler.reconcileFiber(
-      current: appFiber,
-      newFiber: newTree,
+    // Get the current fiber's old children
+    let oldChild = fiber.child
+
+    // Reconcile the component's children
+    print("🔄 [State Update] Reconciling component children...")
+    reconciler.reconcileChildrenForComponent(
+      workInProgress: fiber,
+      currentChild: oldChild,
+      newChild: newTree,
       lane: .defaultLane
     )
 
-    // Update state references
-    reconciler.updateStateReferences(in: workInProgress)
+    // Update state references in the reconciled subtree
+    reconciler.updateStateReferences(in: fiber)
 
-    // Commit
-    print("🔄 [State Update] Committing...")
+    // Commit the changes
+    print("🔄 [State Update] Committing changes...")
     let deletions = reconciler.getDeletions()
-    commitPhase.commitRoot(workInProgress, deletions: deletions)
+    commitPhase.commitRoot(fiber, deletions: deletions)
     reconciler.clearDeletions()
-
-    // Update the root's app child
-    rootFiber.child = workInProgress
 
     print("✅ [State Update] Complete")
   }
@@ -583,7 +579,7 @@ public final class Renderer {
 // MARK: - Global Instance
 
 /// Global renderer instance
-private(set) var renderer: Renderer?
+public private(set) var renderer: Renderer?
 
 /// Initialize the renderer
 public func initRenderer() {
