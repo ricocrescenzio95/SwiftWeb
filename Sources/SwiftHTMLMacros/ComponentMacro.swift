@@ -38,29 +38,29 @@ struct ComponentMacro: ExtensionMacro {
     }
     
     // Generate the __bindStorage method (always, even if no state properties)
-    let bindStorageMethod: String
+    let bindStorageMethods: String
     if !stateProperties.isEmpty {
       let bindingStatements = stateProperties.map { propName in
-        "fiber._bind(stateName: \"\(propName)\", to: _\(propName))"
+        "bindable.bind(stateName: \"\(propName)\", to: _\(propName))"
       }.joined(separator: "\n    ")
-      
-      bindStorageMethod = """
-        
-          func __bindStorage(with fiber: Fiber) {
+
+      bindStorageMethods = """
+
+          func __bindStorage(with bindable: some StateBindable) {
             \(bindingStatements)
           }
         """
     } else {
-      bindStorageMethod = """
-        
-          func __bindStorage(with fiber: Fiber) {
+      bindStorageMethods = """
+
+          func __bindStorage(with bindable: some StateBindable) {
           }
         """
     }
-    
+
     return try [
       ExtensionDeclSyntax("""
-extension \(type): @MainActor ComponentNode {\(raw: bindStorageMethod)
+extension \(type): @MainActor ComponentNode {\(raw: bindStorageMethods)
 }
 """)
     ]

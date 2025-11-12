@@ -8,7 +8,6 @@ public protocol App: @MainActor Node {
 
 public extension App {
   static func main() {
-    let renderer = TreeRenderer()
-    renderer.start(app: Self())
+    start()
   }
 }

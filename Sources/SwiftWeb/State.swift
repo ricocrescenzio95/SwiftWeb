@@ -3,10 +3,14 @@ import SwiftHTML
 
 @MainActor
 public protocol ComponentNode: Node {
-  func __bindStorage(with fiber: Fiber)
-  
+  func __bindStorage(with bindable: some StateBindable)
+
   @HTMLBuilder
   nonisolated var content: Content { get }
+}
+
+public protocol StateBindable: AnyObject {
+  func bind<T>(stateName: String, to state: State<T>)
 }
 
 @attached(extension, conformances: ComponentNode, names: named(__bindStorage))
@@ -40,12 +44,11 @@ public struct State<Value> {
   public var wrappedValue: Value {
     get { box.value as! Value }
     nonmutating set {
-      if let fiber = box.fiber, let treeRenderer {
-        box.value = newValue
-        treeRenderer.render(from: fiber)
-      } else {
+      guard let fiber = box.fiber, let renderer else {
         fatalError("Cannot mutate unmounted view state")
       }
+      box.value = newValue
+      renderer.scheduleStateUpdate(from: fiber)
     }
   }
   

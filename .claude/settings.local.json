@@ -30,7 +30,10 @@
       "Bash(npm init:*)",
       "Bash(npm install:*)",
       "Bash(wasm-objdump:*)",
-      "Bash(swift test:*)"
+      "Bash(swift test:*)",
+      "Bash(mkdir:*)",
+      "Bash(pkill:*)",
+      "Bash(find:*)"
     ],
     "deny": [],
     "ask": []

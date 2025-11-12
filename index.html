@@ -1,5 +1,40 @@
 <!DOCTYPE html>
 <script type="module">
-  import { init } from "./.build/plugins/PackageToJS/outputs/Package/index.js";
-  init();
+  const { init: standardInit } = await import("./.build/plugins/PackageToJS/outputs/Package/index.js");
+
+  async function initWithCustomMemory() {
+    const originalInstantiate = WebAssembly.instantiate;
+    const originalInstantiateStreaming = WebAssembly.instantiateStreaming;
+
+    WebAssembly.instantiate = async (moduleSource, importObject = {}) => {
+      const memory = new WebAssembly.Memory({
+        initial: 2048, // 128 MB
+        maximum: 4096, // 256 MB
+      });
+      importObject.env = { ...importObject.env, memory };
+      return originalInstantiate(moduleSource, importObject);
+    };
+
+    WebAssembly.instantiateStreaming = async (source, importObject = {}) => {
+      const memory = new WebAssembly.Memory({
+        initial: 2048,
+        maximum: 4096,
+      });
+      importObject.env = { ...importObject.env, memory };
+      return originalInstantiateStreaming(source, importObject);
+    };
+
+    // Inizializza il modulo con gestione errori
+    try {
+      await standardInit();
+    } catch (err) {
+      console.error("❌ Errore durante l'inizializzazione del modulo WASM:", err);
+    } finally {
+      // Ripristina le funzioni originali in ogni caso
+      WebAssembly.instantiate = originalInstantiate;
+      WebAssembly.instantiateStreaming = originalInstantiateStreaming;
+    }
+  }
+
+  await initWithCustomMemory();
 </script>

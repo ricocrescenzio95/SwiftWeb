@@ -21,7 +21,11 @@ let package = Package(
     .executableTarget(
       name: "example",
       dependencies: ["SwiftWeb", "JavaScriptKit"],
-      swiftSettings: [.defaultIsolation(MainActor.self)]
+      swiftSettings: [.defaultIsolation(MainActor.self)],
+      linkerSettings: [
+        // Aumenta la memoria WASM stack size
+        .unsafeFlags(["-Xlinker", "-z", "-Xlinker", "stack-size=16777216"], .when(platforms: [.wasi]))
+      ]
     ),
     .testTarget(
       name: "SwiftWebTests",

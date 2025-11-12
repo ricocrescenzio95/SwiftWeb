@@ -1,90 +1,207 @@
 import SwiftHTML
 import JavaScriptKit
+import Foundation
 
-// MARK: - Type Aliases
+// MARK: - Effect Flags
 
-typealias EventHandler = (sending JSValue) -> Void
+/// Flags indicating what side effects need to be performed on a fiber
+public struct EffectFlags: OptionSet {
+  public let rawValue: UInt16
 
-// MARK: - Constants
-
-extension Fiber {
-  enum Tag {
-    static let text = "#text"
-    static let component = "#component"
+  public init(rawValue: UInt16) {
+    self.rawValue = rawValue
   }
+
+  public static let noFlags: EffectFlags         = []  // No effects
+  public static let placement       = EffectFlags(rawValue: 1 << 0)  // Insert into DOM
+  public static let update          = EffectFlags(rawValue: 1 << 1)  // Update props/attrs
+  public static let deletion        = EffectFlags(rawValue: 1 << 2)  // Remove from DOM
+  public static let childDeletion   = EffectFlags(rawValue: 1 << 3)  // Has children to delete
+}
+
+// MARK: - Priority Lanes
+
+/// Priority lanes for scheduling work (inspired by React's lane system)
+public struct Lane: OptionSet {
+  public let rawValue: UInt32
+
+  public init(rawValue: UInt32) {
+    self.rawValue = rawValue
+  }
+
+  public static let noLane: Lane          = []  // No lanes
+  public static let syncLane        = Lane(rawValue: 1 << 0)   // 1 - Immediate sync
+  public static let inputLane       = Lane(rawValue: 1 << 1)   // 2 - User input
+  public static let defaultLane     = Lane(rawValue: 1 << 4)   // 16 - Normal updates
+  public static let transitionLane  = Lane(rawValue: 1 << 6)   // 64 - Low priority
+  public static let idleLane        = Lane(rawValue: 1 << 30)  // Very low priority
+
+  /// Check if this lane is higher priority than another
+  public func isHigherPriorityThan(_ other: Lane) -> Bool {
+    // Lower bit position = higher priority
+    guard rawValue != 0, other.rawValue != 0 else { return false }
+    return rawValue.trailingZeroBitCount < other.rawValue.trailingZeroBitCount
+  }
+}
+
+// MARK: - Fiber Node Tags
+
+/// Type of fiber node
+enum FiberTag {
+  case hostRoot           // Root of the fiber tree
+  case hostComponent      // DOM element (div, span, etc.)
+  case hostText           // Text node
+  case functionComponent  // Function component
+  case classComponent     // Class component (not used in SwiftWeb)
 }
 
 // MARK: - Fiber Node
 
-public final class Fiber: CustomStringConvertible {
-  // MARK: Node Properties
+/// A fiber represents a unit of work and a node in the React-like virtual tree
+final class Fiber {
 
-  let tag: String
+  // MARK: - Identity
+
+  /// Type of this fiber (component, element, text, etc.)
+  let tag: FiberTag
+
+  /// Unique key for reconciliation (for lists)
   var key: AnyHashable?
-  var attributes: [String: String]
-  var textContent: String?
-  var children: [Fiber] = []
 
-  // MARK: Tree Structure
+  /// Type of the element (for components)
+  var elementType: (any Node.Type)?
 
+  /// Resolved type (same as elementType for now)
+  var type: String
+
+  /// Reference to the actual DOM node (for host components/text)
+  var stateNode: JSObject?
+
+  // MARK: - Tree Structure (Linked List)
+
+  /// Parent fiber (where we "return" after completing this work)
   weak var parent: Fiber?
-  var domNode: JSObject?
-  var events: [String: EventHandler] = [:]
 
-  // MARK: Source Tracking
+  /// First child fiber
+  var child: Fiber?
 
-  /// Track what Node created this Fiber for re-rendering
-  var sourceNode: (any Node)?
+  /// Next sibling fiber
+  var sibling: Fiber?
+
+  /// Index among siblings
+  var index: Int = 0
+
+  // MARK: - Props and State
+
+  /// New props being worked on
+  var pendingProps: [String: String]
+
+  /// Props from the last completed render
+  var memoizedProps: [String: String]
+
+  /// Text content (for text nodes)
+  var textContent: String?
+
+  /// Component state storage
   var states: [String: Any] = [:]
 
-  // MARK: Reconciliation
+  /// Reference to the source Node that created this fiber
+  var sourceNode: (any Node)?
 
-  var alternate: Fiber?
-  var effectTag: EffectTag = .none
-  var nextEffect: Fiber?
+  // MARK: - Effects and Updates
+
+  /// What effects need to be applied to this fiber
+  var flags: EffectFlags = .noFlags
+
+  /// Effect flags from the subtree
+  var subtreeFlags: EffectFlags = .noFlags
+
+  /// Children marked for deletion
+  var deletions: [Fiber]?
+
+  /// Event handlers attached to this fiber
+  var events: [String: EventHandler] = [:]
+
+  // MARK: - Effect List (Linked List of Effects)
+
+  /// First fiber with effects in subtree
   var firstEffect: Fiber?
+
+  /// Last fiber with effects in subtree
   var lastEffect: Fiber?
 
-  // MARK: Initialization
+  /// Next fiber in the effect list
+  var nextEffect: Fiber?
+
+  // MARK: - Scheduling
+
+  /// Priority lanes for this fiber's work
+  var lanes: Lane = .noLane
+
+  /// Priority lanes needed by children
+  var childLanes: Lane = .noLane
+
+  // MARK: - Double Buffering
+
+  /// The alternate fiber (current ↔ work-in-progress)
+  var alternate: Fiber?
+
+  // MARK: - Initialization
 
   init(
-    tag: String,
+    tag: FiberTag,
+    type: String,
     key: AnyHashable? = nil,
-    attributes: [String: String] = [:],
-    textContent: String? = nil,
-    events: [String: EventHandler] = [:],
-    parent: Fiber? = nil
+    pendingProps: [String: String] = [:],
+    textContent: String? = nil
   ) {
     self.tag = tag
+    self.type = type
     self.key = key
-    self.attributes = attributes
+    self.pendingProps = pendingProps
+    self.memoizedProps = [:]
     self.textContent = textContent
-    self.events = events
-    self.parent = parent
   }
 
-  // MARK: Helper Methods
+  @MainActor deinit {
+    // Break sibling chain iteratively to avoid recursive deallocation
+    // This prevents stack overflow with long sibling chains (e.g., 1000+ items)
+    var current = sibling
+    sibling = nil
+
+    while let fiber = current {
+      let next = fiber.sibling
+      fiber.sibling = nil
+      current = next
+    }
+  }
+
+  // MARK: - Helpers
 
   /// Check if this is a text node
   var isTextNode: Bool {
-    tag == Tag.text
+    tag == .hostText
   }
 
-  /// Check if this is a component wrapper
+  /// Check if this is a component (not a host element)
   var isComponent: Bool {
-    tag == Tag.component
+    tag == .functionComponent || tag == .classComponent
   }
 
-  /// Add children to this fiber, setting their parent reference
-  func addChildren(_ newChildren: [Fiber]) {
-    children.reserveCapacity(children.count + newChildren.count)
-    for child in newChildren {
-      child.parent = self
-    }
-    children.append(contentsOf: newChildren)
+  /// Check if this is a host element (DOM element)
+  var isHostComponent: Bool {
+    tag == .hostComponent
   }
-  
-  public func _bind<T>(stateName: String, to state: State<T>) {
+
+  /// Bind component state storage (bridge to old system)
+  func bindComponentState(_ component: any ComponentNode) {
+    // Store reference to component for state management
+    // This allows components to access their state through this fiber
+  }
+}
+
+extension Fiber: StateBindable {
+  public func bind<T>(stateName: String, to state: State<T>) {
     state.box.stateName = stateName
     state.box.fiber = self
 
@@ -92,249 +209,76 @@ public final class Fiber: CustomStringConvertible {
       // Initialize with the state's initial value if not present
       states[stateName] = state.box.initialValue
     }
-    // If states[stateName] exists, we keep it (preserving component state)
-    // The State.wrappedValue getter will read from fiber.states correctly
   }
-  
-  // MARK: CustomStringConvertible
+}
 
+// MARK: - Fiber Creation Helpers
+
+extension Fiber {
+
+  /// Create a work-in-progress fiber from a current fiber
+  static func createWorkInProgress(
+    current: Fiber,
+    pendingProps: [String: String]
+  ) -> Fiber {
+    var workInProgress = current.alternate
+
+    if workInProgress == nil {
+      // First time: create a new fiber
+      workInProgress = Fiber(
+        tag: current.tag,
+        type: current.type,
+        key: current.key,
+        pendingProps: pendingProps
+      )
+      workInProgress!.elementType = current.elementType
+      workInProgress!.stateNode = current.stateNode
+      workInProgress!.alternate = current
+      current.alternate = workInProgress
+    } else {
+      // Reuse existing work-in-progress fiber
+      workInProgress!.pendingProps = pendingProps
+      workInProgress!.flags = .noFlags
+      workInProgress!.subtreeFlags = .noFlags
+      workInProgress!.deletions = nil
+      workInProgress!.nextEffect = nil
+    }
+
+    // Copy from current
+    workInProgress!.child = current.child
+    workInProgress!.memoizedProps = current.memoizedProps
+    workInProgress!.states = current.states
+    workInProgress!.sourceNode = current.sourceNode
+    workInProgress!.lanes = current.lanes
+    workInProgress!.childLanes = current.childLanes
+
+    return workInProgress!
+  }
+
+  /// Create a fiber from a Node
+  static func createFiberFromElement(
+    _ element: some Node,
+    lane: Lane
+  ) -> Fiber? {
+    // This will be implemented by the FiberConverter
+    return nil
+  }
+}
+
+// MARK: - Debug Description
+
+extension Fiber: CustomStringConvertible {
   public var description: String {
-    buildDescription(prefix: "")
-  }
-
-  private func buildDescription(prefix: String) -> String {
-    var lines: [String] = []
-
-    // Build current node description
-    if isTextNode {
-      lines.append("\(prefix)(text: \"\(textContent ?? "")\")")
-    } else {
-      var nodeDesc = "\(prefix)\(tag)"
-      if !attributes.isEmpty {
-        let attrsString = attributes
-          .sorted { $0.key < $1.key }
-          .map { "\($0.key)=\"\($0.value)\"" }
-          .joined(separator: " ")
-        nodeDesc += " [\(attrsString)]"
-      }
-      lines.append(nodeDesc)
+    var desc = "Fiber(\(tag), type: \(type)"
+    if let key = key {
+      desc += ", key: \(key)"
     }
-
-    // Add children recursively
-    let childPrefix = prefix.replacing("|_", with: "  ") + " |_"
-    for child in children {
-      lines.append(child.buildDescription(prefix: childPrefix))
+    if flags != .noFlags {
+      desc += ", flags: \(flags)"
     }
-
-    return lines.joined(separator: "\n")
+    desc += ")"
+    return desc
   }
 }
 
-// MARK: - Effect Tags
-
-enum EffectTag {
-  case none
-  case placement    // New fiber needs to be added to DOM
-  case update       // Fiber needs to update its properties
-  case deletion     // Fiber needs to be removed from DOM
-}
-
-
-protocol FiberConvertible {
-  func convert(using converter: FiberConverter) -> [Fiber]
-}
-
-extension HTMLElement: FiberConvertible {
-  func convert(using converter: FiberConverter) -> [Fiber] {
-    converter.convert(self)
-  }
-}
-
-extension EventNode: FiberConvertible {
-  func convert(using converter: FiberConverter) -> [Fiber] {
-    converter.convert(self)
-  }
-}
-
-extension String: FiberConvertible {
-  func convert(using converter: FiberConverter) -> [Fiber] {
-    converter.convert(self)
-  }
-}
-
-extension _EmptyNode: FiberConvertible {
-  func convert(using converter: FiberConverter) -> [Fiber] {
-    converter.convert(self)
-  }
-}
-
-extension _TupleNode: FiberConvertible {
-  func convert(using converter: FiberConverter) -> [Fiber] {
-    converter.convert(self)
-  }
-}
-
-extension _EitherNode: FiberConvertible {
-  func convert(using converter: FiberConverter) -> [Fiber] {
-    converter.convert(self)
-  }
-}
-
-extension Optional: FiberConvertible where Wrapped: Node {
-  func convert(using converter: FiberConverter) -> [Fiber] {
-    converter.convert(self)
-  }
-}
-
-extension ForEach: FiberConvertible {
-  func convert(using converter: FiberConverter) -> [Fiber] {
-    converter.convert(self)
-  }
-}
-
-// MARK: - Fiber Converter
-
-struct FiberConverter {
-  // Shared empty dictionary to avoid allocations
-  private static let emptyAttributes: [String: String] = [:]
-
-  // MARK: - HTML Elements
-
-  @inline(__always)
-  func convert<AttributesType, Content: Node>(_ element: HTMLElement<AttributesType, Content>) -> [Fiber] {
-    let attributes = element.attributes.isEmpty
-      ? Self.emptyAttributes
-      : element.attributes.reduce(
-          into: [String: String](minimumCapacity: element.attributes.count)
-        ) { dict, attr in
-          dict[attr.key] = attr.value ?? ""
-        }
-
-    let fiber = Fiber(tag: element.name, attributes: attributes)
-    fiber.sourceNode = element
-
-    // Convert and add child content
-    if let convertible = element.content as? FiberConvertible {
-      let children = convertible.convert(using: self)
-      fiber.addChildren(children)
-    }
-
-    return [fiber]
-  }
-
-  // MARK: - Event Nodes
-  
-  @inline(__always)
-  func convert<Content: Node>(_ element: EventNode<Content>) -> [Fiber] {
-    let fibers = convertToFibers(element.content)
-
-    // Attach events to all resulting fibers
-    for fiber in fibers {
-      for event in element.events {
-        fiber.events[event.key] = event.handler
-      }
-    }
-
-    return fibers
-  }
-
-  // MARK: - Primitive Types
-
-  @inline(__always)
-  func convert(_ text: String) -> [Fiber] {
-    [Fiber(tag: Fiber.Tag.text, textContent: text)]
-  }
-
-  @inline(__always)
-  func convert(_ empty: _EmptyNode) -> [Fiber] {
-    []
-  }
-
-  // MARK: - Conditional & Collection Types
-  
-  func convert<First: Node, Second: Node>(_ tuple: _TupleNode<First, Second>) -> [Fiber] {
-    var result: [Fiber] = []
-    result.append(contentsOf: convertToFibers(tuple.first))
-    result.append(contentsOf: convertToFibers(tuple.second))
-    return result
-  }
-
-  func convert<First: Node, Second: Node>(_ either: _EitherNode<First, Second>) -> [Fiber] {
-    switch either {
-    case .first(let first):
-      return convertToFibers(first)
-    case .second(let second):
-      return convertToFibers(second)
-    }
-  }
-
-  func convert<Wrapped: Node>(_ optional: Wrapped?) -> [Fiber] {
-    guard let wrapped = optional else { return [] }
-    return convertToFibers(wrapped)
-  }
-  
-  // MARK: - Components
-
-  func convert(_ element: some Node) -> [Fiber] {
-    // Check if this is a FiberConvertible type
-    if let convertible = element as? FiberConvertible {
-      return convertible.convert(using: self)
-    }
-
-    // Check if this is a stateful component
-    if let component = element as? any ComponentNode {
-      return convertComponent(component)
-    }
-
-    // Fallback: unwrap content
-    return convert(element.content)
-  }
-
-  private func convertComponent(_ component: some ComponentNode) -> [Fiber] {
-    let fiber = Fiber(tag: Fiber.Tag.component, attributes: Self.emptyAttributes)
-    component.__bindStorage(with: fiber)
-    fiber.sourceNode = component
-
-    // Convert component's content
-    let children = convertToFibers(component.content)
-    fiber.addChildren(children)
-
-    return [fiber]
-  }
-  
-  // MARK: - ForEach
-
-  @inline(__always)
-  func convert<Data: RandomAccessCollection, ID: Hashable, Content: Node>(
-    _ forEach: ForEach<Data, ID, Content>
-  ) -> [Fiber] {
-    var result: [Fiber] = []
-    result.reserveCapacity(forEach.data.count)
-
-    for element in forEach.data {
-      let key = AnyHashable(forEach.id(element))
-      let content = forEach.contents(element)
-      let fibers = convertToFibers(content)
-
-      // Set the key on all top-level fibers for this item
-      fibers.forEach { $0.key = key }
-
-      result.append(contentsOf: fibers)
-    }
-
-    return result
-  }
-
-  // MARK: - Helper Methods
-
-  /// Convert any Node to fibers, handling FiberConvertible protocol
-  @inline(__always)
-  private func convertToFibers(_ node: some Node) -> [Fiber] {
-    if let convertible = node as? FiberConvertible {
-      return convertible.convert(using: self)
-    } else {
-      // Call the generic convert method which checks for ComponentNode
-      return convert(node)
-    }
-  }
-}
+typealias EventHandler = (sending JSValue) -> Void
