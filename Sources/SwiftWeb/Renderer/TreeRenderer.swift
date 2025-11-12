@@ -11,27 +11,16 @@ final class TreeRenderer {
   var deletions: [Fiber] = []
   var firstEffect: Fiber?
   var lastEffect: Fiber?
-  
-  #if DEBUG
-  var enableLogging = false
-  #else
-  var enableLogging = false
-  #endif
-  
-  private(set) var render: (() -> Void)!
-  
-  func start(app: @autoclosure @escaping () -> some App) {
+
+  func start(app: some App) {
     treeRenderer = self
-    render = { [weak self] in
-      self?.performWork(newTree: app())
-    }
-    render()
+    firstRender(newTree: app)
   }
   
   // MARK: - Reconciliation
   
   /// Main entry point for updates
-  func performWork(newTree: some Node) {
+  func firstRender(newTree: some Node) {
     // Clear deletions from previous render
     deletions.removeAll(keepingCapacity: true)
 
@@ -59,10 +48,7 @@ final class TreeRenderer {
 
   /// Re-render from a specific fiber node (for component updates)
   func render(from fiber: Fiber) {
-    guard let stateful = fiber.sourceNode as? any ComponentNode else {
-      render()
-      return
-    }
+    guard let stateful = fiber.sourceNode as? any ComponentNode else { return }
 
     // Clear deletions from previous render
     deletions.removeAll(keepingCapacity: true)

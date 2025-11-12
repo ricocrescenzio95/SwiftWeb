@@ -283,20 +283,20 @@ struct FiberConverter {
 
     // Check if this is a stateful component
     if let component = element as? any ComponentNode {
-      return convertComponent(component, sourceNode: element)
+      return convertComponent(component)
     }
 
     // Fallback: unwrap content
     return convert(element.content)
   }
 
-  private func convertComponent(_ component: some ComponentNode, sourceNode: some Node) -> [Fiber] {
+  private func convertComponent(_ component: some ComponentNode) -> [Fiber] {
     let fiber = Fiber(tag: Fiber.Tag.component, attributes: Self.emptyAttributes)
     component.__bindStorage(with: fiber)
-    fiber.sourceNode = sourceNode
+    fiber.sourceNode = component
 
     // Convert component's content
-    let children = convertToFibers(sourceNode.content)
+    let children = convertToFibers(component.content)
     fiber.addChildren(children)
 
     return [fiber]

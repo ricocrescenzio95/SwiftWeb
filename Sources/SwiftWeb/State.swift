@@ -13,7 +13,7 @@ public protocol ComponentNode: Node {
 public macro Component() = #externalMacro(module: "SwiftHTMLMacros", type: "ComponentMacro")
 
 final class StateBox {
-  var fiber: Fiber?
+  weak var fiber: Fiber?
   var stateName: String?
   var initialValue: Any
   var value: Any {
