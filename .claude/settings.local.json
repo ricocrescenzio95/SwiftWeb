@@ -1,0 +1,30 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(swift run:*)",
+      "Bash(swift --version:*)",
+      "Bash(rm:*)",
+      "WebSearch",
+      "Bash(swiftly install:*)",
+      "Bash(swiftly use 6.2)",
+      "Bash(swift sdk install:*)",
+      "Bash(swift sdk:*)",
+      "Bash(swift build:*)",
+      "WebFetch(domain:github.com)",
+      "Bash(python3:*)",
+      "Bash(lsof:*)",
+      "Bash(/Users/rico/Desktop/swift-web/.swift-version)",
+      "Bash(chmod:*)",
+      "Bash(xargs kill:*)",
+      "Bash(./dev.sh)",
+      "Bash(wasmtime:*)",
+      "Bash(cat:*)",
+      "Bash(swift package:*)",
+      "Bash(git init:*)",
+      "Bash(git remote add:*)",
+      "Bash(git add:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}
