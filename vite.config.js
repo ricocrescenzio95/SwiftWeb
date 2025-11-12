@@ -1,7 +1,9 @@
 import { defineConfig } from 'vite'
 import path from 'path'
+import { swiftErrorOverlay } from './vite-plugin-swift-errors.js'
 
 export default defineConfig({
+  plugins: [swiftErrorOverlay()],
   server: {
     port: 8080,
     open: true,
