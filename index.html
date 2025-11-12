@@ -1,17 +1,5 @@
 <!DOCTYPE html>
-<html>
-  <head>
-    <meta charset="utf-8">
-      <script type="importmap">
-        {
-          "imports": {
-            "@bjorn3/browser_wasi_shim": "https://cdn.jsdelivr.net/npm/@bjorn3/browser_wasi_shim@0.4.2/dist/index.js"
-          }
-        }
-      </script>
-      <script type="module">
-        import { init } from "./.build/plugins/PackageToJS/outputs/Package/index.js";
-        init();
-      </script>
-  </head>
-</html>
+<script type="module">
+  import { init } from "./.build/plugins/PackageToJS/outputs/Package/index.js";
+  init();
+</script>

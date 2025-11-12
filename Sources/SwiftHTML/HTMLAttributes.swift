@@ -54,3 +54,9 @@ public extension HTMLAttribute {
   static func aria(_ name: String, _ v: String) -> Self { .init(key: "aria-\(name)", value: v) }
   static func data(_ name: String, _ v: String) -> Self { .init(key: "data-\(name)", value: v) }
 }
+
+public extension HTMLAttribute {
+  static func charset(_ v: String) -> Self { .init(key: "charset", value: v) }
+  static func name(_ v: String) -> Self { .init(key: "name", value: v) }
+  static func content(_ v: String) -> Self { .init(key: "content", value: v) }
+}

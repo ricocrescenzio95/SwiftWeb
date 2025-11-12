@@ -290,7 +290,7 @@ struct FiberConverter {
     return convert(element.content)
   }
 
-  private func convertComponent(_ component: any ComponentNode, sourceNode: any Node) -> [Fiber] {
+  private func convertComponent(_ component: some ComponentNode, sourceNode: some Node) -> [Fiber] {
     let fiber = Fiber(tag: Fiber.Tag.component, attributes: Self.emptyAttributes)
     component.__bindStorage(with: fiber)
     fiber.sourceNode = sourceNode

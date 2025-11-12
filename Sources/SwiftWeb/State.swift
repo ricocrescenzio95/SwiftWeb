@@ -16,9 +16,9 @@ final class StateBox {
   var fiber: Fiber?
   var stateName: String?
   var initialValue: Any
-  var value: Any? {
+  var value: Any {
     get {
-      fiber?.states[stateName ?? ""]
+      fiber?.states[stateName ?? ""] ?? initialValue
     }
     set {
       fiber?.states[stateName ?? ""] = newValue
@@ -38,13 +38,7 @@ public struct State<Value> {
   }
 
   public var wrappedValue: Value {
-    get {
-      if let value = box.value {
-        return value as! Value
-      } else {
-        return box.initialValue as! Value
-      }
-    }
+    get { box.value as! Value }
     nonmutating set {
       if let fiber = box.fiber, let treeRenderer {
         box.value = newValue
@@ -77,5 +71,9 @@ public struct Binding<Value> {
   public var wrappedValue: Value {
     get { get() }
     nonmutating set { set(newValue) }
+  }
+  
+  public var projectedValue: Self {
+    self
   }
 }

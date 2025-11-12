@@ -187,9 +187,8 @@ struct BrowserDOMTests {
 
 @Suite("Full Integration Tests (Browser)", .disabled())
 struct BrowserIntegrationTests {
-  
   struct TestApp: App {
-    var document: some Node {
+    var content: some Node {
       html {
         body {
           div(.id("root")) {

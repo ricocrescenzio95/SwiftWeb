@@ -22,7 +22,15 @@
       "Bash(swift package:*)",
       "Bash(git init:*)",
       "Bash(git remote add:*)",
-      "Bash(git add:*)"
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git push:*)",
+      "Bash(node --version:*)",
+      "Bash(npm --version:*)",
+      "Bash(npm init:*)",
+      "Bash(npm install:*)",
+      "Bash(wasm-objdump:*)",
+      "Bash(swift test:*)"
     ],
     "deny": [],
     "ask": []

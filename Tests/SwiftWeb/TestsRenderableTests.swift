@@ -146,7 +146,7 @@ struct FiberTests {
 struct TreeRendererInitTests {
   
   struct SimpleApp: App {
-    var document: some Node {
+    var content: some Node {
       html {
         body {
           div { "Hello World" }
@@ -194,7 +194,6 @@ struct ReconciliationTests {
     let renderer = TreeRenderer()
     
     // Test through performWork since reconcile is private
-    let converter = FiberConverter()
     let html = div { "Test" }
     
     renderer.current = nil

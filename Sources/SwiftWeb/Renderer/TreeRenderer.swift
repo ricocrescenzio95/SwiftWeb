@@ -28,76 +28,6 @@ final class TreeRenderer {
     render()
   }
   
-  /// Debug helper: Print the current fiber tree
-  func debugPrintTree() {
-    guard let current = current else { return }
-    if enableLogging {
-      print("=== Current Fiber Tree ===")
-      print(current)
-    }
-  }
-  
-  /// Debug helper: Print effect list
-  func debugPrintEffects() {
-    guard enableLogging else { return }
-    
-    print("=== Effect List ===")
-    var effect = firstEffect
-    var count = 0
-    while let currentEffect = effect {
-      print("\(count): \(currentEffect.effectTag) - \(currentEffect.tag)")
-      effect = currentEffect.nextEffect
-      count += 1
-    }
-    if count == 0 {
-      print("(no effects)")
-    }
-  }
-  
-  /// Debug helper: Verify DOM matches fiber tree
-  func debugVerifyDOM() {
-    #if arch(wasm32)
-    guard let root = current else { return }
-    
-    func verifyNode(_ fiber: Fiber) -> Bool {
-      guard let domNode = fiber.domNode else {
-        if enableLogging {
-          print("⚠️ Fiber has no DOM node: \(fiber.tag)")
-        }
-        return false
-      }
-      
-      // Verify children count
-      let domChildCount = domNode.childNodes.length.number ?? 0
-      if fiber.children.count != Int(domChildCount) {
-        if enableLogging {
-          print("⚠️ Child count mismatch for \(fiber.tag): fiber=\(fiber.children.count), dom=\(domChildCount)")
-        }
-        return false
-      }
-      
-      // Recursively verify children
-      for child in fiber.children {
-        if !verifyNode(child) {
-          return false
-        }
-      }
-      
-      return true
-    }
-    
-    if enableLogging {
-      if verifyNode(root) {
-        print("✅ DOM verification passed")
-      } else {
-        print("❌ DOM verification failed")
-      }
-    } else {
-      _ = verifyNode(root)
-    }
-    #endif
-  }
-  
   // MARK: - Reconciliation
   
   /// Main entry point for updates
@@ -338,18 +268,8 @@ final class TreeRenderer {
 
       if let (matchingOld, oldPosition) = oldChildrenMap[key] {
         // Found exact key match
-        let reconciledChild: Fiber
-
-        // Bailout optimization: if nothing changed, reuse old fiber
-        if canBailout(old: matchingOld, new: newChild) {
-          reconciledChild = matchingOld
-          reconciledChild.parent = wipFiber
-          // No effect tag - nothing changed
-        } else {
-          // Need full reconciliation
-          reconciledChild = reconcile(current: matchingOld, new: newChild)
-          reconciledChild.parent = wipFiber
-        }
+        let reconciledChild = reconcile(current: matchingOld, new: newChild)
+        reconciledChild.parent = wipFiber
 
         wipFiber.children.append(reconciledChild)
 
@@ -383,35 +303,6 @@ final class TreeRenderer {
         appendEffect(child)
       }
     }
-  }
-
-  /// Check if we can skip reconciliation and reuse old fiber (bailout optimization)
-  @inline(__always)
-  private func canBailout(old: Fiber, new: Fiber) -> Bool {
-    guard old.tag == new.tag else { return false }
-
-    // Fast path for unchanged nodes
-    let isSimpleAndUnchanged =
-      old.attributes.isEmpty &&
-      new.attributes.isEmpty &&
-      old.events.isEmpty &&
-      new.events.isEmpty &&
-      old.children.count == new.children.count
-
-    if isSimpleAndUnchanged {
-      // Text nodes require content check
-      if old.isTextNode {
-        return old.textContent == new.textContent
-      }
-      // Simple elements can bail out if child count matches
-      return true
-    }
-
-    // Slow path: detailed comparison
-    return !attributesChanged(current: old, new: new) &&
-           !textContentChanged(current: old, new: new) &&
-           !eventsChanged(current: old, new: new) &&
-           old.children.count == new.children.count
   }
 
   /// Tag-based reconciliation for non-keyed children (fallback)
@@ -592,8 +483,14 @@ final class TreeRenderer {
 
     // Find parent DOM node, traversing up through component wrappers if needed
     guard let parentNode = findParentDOMNode(fiber: fiber) else {
-      // No parent means this is the root - append to document body
-      _ = JSObject.global.document.body.appendChild(node)
+      // No parent means this is the root
+      if fiber.tag == "html" {
+        // Replace entire document element
+        _ = JSObject.global.document.object!.documentElement.replaceWith(node)
+      } else {
+        // Append to document body for non-html root elements
+        _ = JSObject.global.document.body.appendChild(node)
+      }
       return
     }
 
