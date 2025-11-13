@@ -49,14 +49,14 @@ struct ComponentMacro: ExtensionMacro {
 
       bindStorageMethods = """
 
-          func __bindStorage(with bindable: some StateBindable) {
+          public func __bindStorage(with bindable: some StateBindable) {
             \(bindingStatements)
           }
         """
     } else {
       bindStorageMethods = """
 
-          func __bindStorage(with bindable: some StateBindable) {
+          public func __bindStorage(with bindable: some StateBindable) {
           }
         """
     }

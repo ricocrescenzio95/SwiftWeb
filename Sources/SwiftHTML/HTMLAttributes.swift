@@ -16,8 +16,8 @@ public struct HTMLAttribute<AttributeType> {
   public static func rawHTML(key: String, value: String?) -> Self { .init(key: key, value: value) }
 }
 
+// Global Attributes
 public extension HTMLAttribute {
-  // Factories (typed)
   static func accesskey(_ v: String) -> Self { .init(key: "accesskey", value: v) }
   static func autocapitalize(_ v: String) -> Self { .init(key: "autocapitalize", value: v) }
   static func autofocus(_ on: Bool = true) -> Self { .init(key: "autofocus", value: on ? "" : nil) }

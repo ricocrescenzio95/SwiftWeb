@@ -41,7 +41,8 @@ struct TestApp: App {
       }
       body {
         h1 { "🧪 V2 Renderer Test" }
-        
+        input()
+          
         div(.class("box")) {
           h2 { "Static Content" }
           p { "Se vedi questo, il rendering base funziona! ✅" }
