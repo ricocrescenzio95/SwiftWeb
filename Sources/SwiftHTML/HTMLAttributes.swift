@@ -22,7 +22,7 @@ public extension HTMLAttribute {
   static func autocapitalize(_ v: String) -> Self { .init(key: "autocapitalize", value: v) }
   static func autofocus(_ on: Bool = true) -> Self { .init(key: "autofocus", value: on ? "" : nil) }
   static func `class`(_ classes: [String]) -> Self { .init(key: "class", value: classes.joined(separator: " ")) }
-  static func `class`(_ class: String) -> Self { .init(key: "class", value: `class`) }
+  static func `class`(_ class: String...) -> Self { .init(key: "class", value: `class`.joined(separator: " ")) }
   static func contenteditable(_ mode: ContentEditable) -> Self { .init(key: "contenteditable", value: mode.rawValue) }
   static func dir(_ v: Dir) -> Self { .init(key: "dir", value: v.rawValue) }
   static func draggable(_ on: Bool) -> Self { .init(key: "draggable", value: on ? "true" : "false") }
@@ -43,7 +43,8 @@ public extension HTMLAttribute {
   static func popover(_ on: Bool = true) -> Self { .init(key: "popover", value: on ? "" : nil) }
   static func slot(_ v: String) -> Self { .init(key: "slot", value: v) }
   static func spellcheck(_ on: Bool) -> Self { .init(key: "spellcheck", value: on ? "true" : "false") }
-  static func style(_ css: String) -> Self { .init(key: "style", value: css) }
+  static func style(_ css: CSS.Property...) -> Self { .init(key: "style", value: CSS.Body(css).cssValue) }
+  static func style(_ css: [CSS.Property]) -> Self { .init(key: "style", value: CSS.Body(css).cssValue) }
   static func tabindex(_ i: Int) -> Self { .init(key: "tabindex", value: String(i)) }
   static func title(_ v: String) -> Self { .init(key: "title", value: v) }
   static func translate(_ v: Translate) -> Self { .init(key: "translate", value: v.rawValue) }

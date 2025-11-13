@@ -63,7 +63,7 @@ final class CommitPhase {
       fiber.flags.remove(.placement)
     }
 
-    if flags.contains(.update) && !fiber.isComponent {
+    if flags.contains(.update) {
       commitUpdate(fiber)
       // Remove the update flag
       fiber.flags.remove(.update)

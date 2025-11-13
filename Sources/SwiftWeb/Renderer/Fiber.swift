@@ -49,10 +49,9 @@ public struct Lane: OptionSet {
 /// Type of fiber node
 enum FiberTag {
   case hostRoot           // Root of the fiber tree
-  case hostComponent      // DOM element (div, span, etc.)
+  case hostDOM      // DOM element (div, span, etc.)
   case hostText           // Text node
-  case functionComponent  // Function component
-  case classComponent     // Class component (not used in SwiftWeb)
+  case component  // Function component
 }
 
 // MARK: - Fiber Node
@@ -185,18 +184,12 @@ final class Fiber {
 
   /// Check if this is a component (not a host element)
   var isComponent: Bool {
-    tag == .functionComponent || tag == .classComponent
+    tag == .component
   }
 
   /// Check if this is a host element (DOM element)
   var isHostComponent: Bool {
-    tag == .hostComponent
-  }
-
-  /// Bind component state storage (bridge to old system)
-  func bindComponentState(_ component: any ComponentNode) {
-    // Store reference to component for state management
-    // This allows components to access their state through this fiber
+    tag == .hostDOM
   }
 }
 
@@ -249,19 +242,11 @@ extension Fiber {
     workInProgress!.memoizedProps = current.memoizedProps
     workInProgress!.states = current.states
     workInProgress!.sourceNode = current.sourceNode
+    workInProgress!.events = current.events
     workInProgress!.lanes = current.lanes
     workInProgress!.childLanes = current.childLanes
 
     return workInProgress!
-  }
-
-  /// Create a fiber from a Node
-  static func createFiberFromElement(
-    _ element: some Node,
-    lane: Lane
-  ) -> Fiber? {
-    // This will be implemented by the FiberConverter
-    return nil
   }
 }
 

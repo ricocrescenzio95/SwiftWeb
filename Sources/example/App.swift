@@ -13,42 +13,40 @@ struct TestApp: App {
         meta(.charset("utf-8"))
         title { "V2 Renderer Test" }
         style {
-          """
-          body {
-            font-family: system-ui;
-            padding: 40px;
-            max-width: 800px;
-            margin: 0 auto;
-          }
-          h1 {
-            color: #007AFF;
-          }
-          .box {
-            background: #f5f5f5;
-            padding: 20px;
-            border-radius: 8px;
-            margin: 20px 0;
-          }
-          button {
-            padding: 10px 20px;
-            margin: 5px;
-            background: #007AFF;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-          }
-          """
+          "body"(
+            .fontFamily("system-ui"),
+            .padding(40),
+            .maxWidth(800),
+            .margin(.init(vertical: 0, horizontal: .auto))
+          )
+          "h1"(
+            .color(.hex("#007AFF"))
+          )
+          ".box"(
+            .backgroundColor(.hex("#F5F5F5")),
+            .padding(20),
+            .borderRadius(8),
+            .margin(.init(vertical: 20, horizontal: .zero))
+          )
+          "button"(
+            .padding(.init(vertical: 10, horizontal: 20)),
+            .margin(5),
+            .backgroundColor(.hex("#007AFF")),
+            .color(.white),
+            .border("none"),
+            .borderRadius(4),
+            .cursor(.pointer)
+          )
         }
       }
       body {
         h1 { "🧪 V2 Renderer Test" }
-
+        
         div(.class("box")) {
           h2 { "Static Content" }
           p { "Se vedi questo, il rendering base funziona! ✅" }
         }
-
+        
         div(.class("box")) {
           h2 { "Event Handler Test" }
           CounterView()
@@ -76,7 +74,12 @@ struct TestApp: App {
                 items.insert(items.max()! + 1, at: 0)
               }
             }
-          button { "Shuffle" }
+          button(
+            .style(isVisible ? [
+              .backgroundColor(.aqua),
+              .color(.black)
+            ] : [])
+          ) { "Shuffle" }
             .onClick {
               items.shuffle()
             }
@@ -103,20 +106,20 @@ struct TestApp: App {
 
 @Component
 struct CounterView {
-  @State var count: Int
+  @State var count: Int = 0
   
   @HTMLBuilder
   var content: some Node {
     
-      button { "-" }
-        .onClick {
-          self.count -= 1
-        }
-      "Count: \(count)"
-      button { "+" }
-        .onClick {
-          self.count += 1
-        }
+    button { "-" }
+      .onClick {
+        self.count -= 1
+      }
+    "Count: \(count)"
+    button { "+" }
+      .onClick {
+        self.count += 1
+      }
     
   }
 }

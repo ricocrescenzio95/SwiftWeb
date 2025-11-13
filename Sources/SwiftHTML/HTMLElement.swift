@@ -53,8 +53,8 @@ public func meta(_ attributes: HTMLAttribute<Void>...) -> HTMLElement<Void, some
   .init(name: "meta", attributes: attributes, content: _EmptyNode())
 }
 
-public func style(_ attributes: HTMLAttribute<Void>..., @HTMLBuilder content: () -> some Node) -> HTMLElement<Void, some Node> {
-  .init(name: "style", attributes: attributes, content: content())
+public func style(_ attributes: HTMLAttribute<Void>..., @CSS content: () -> [CSS.Selector]) -> HTMLElement<Void, some Node> {
+  .init(name: "style", attributes: attributes, content: content().lazy.map(\.cssValue).joined(separator: "\n"))
 }
 
 // MARK: - Sectioning Root

@@ -339,11 +339,11 @@ extension Reconciler {
   /// This is where we decide how to process each fiber type
   private func beginWork(_ fiber: Fiber) -> Fiber? {
     switch fiber.tag {
-    case .functionComponent:
-      return updateFunctionComponent(fiber)
+    case .component:
+      return updateComponent(fiber)
 
-    case .hostComponent:
-      return updateHostComponent(fiber)
+    case .hostDOM:
+      return updateHostDOM(fiber)
 
     case .hostText:
       // Text nodes have no children
@@ -352,21 +352,14 @@ extension Reconciler {
     case .hostRoot:
       // Root just processes its children
       return fiber.child
-
-    case .classComponent:
-      // Not implemented in SwiftWeb
-      return nil
     }
   }
 
   /// Update a function component
-  private func updateFunctionComponent(_ fiber: Fiber) -> Fiber? {
+  private func updateComponent(_ fiber: Fiber) -> Fiber? {
     guard let component = fiber.sourceNode as? any ComponentNode else {
       return fiber.child
     }
-
-    // Bind state to this fiber
-    fiber.bindComponentState(component)
 
     // Get the component's content
     let content = component.content
@@ -386,7 +379,7 @@ extension Reconciler {
   }
 
   /// Update a host component (DOM element)
-  private func updateHostComponent(_ fiber: Fiber) -> Fiber? {
+  private func updateHostDOM(_ fiber: Fiber) -> Fiber? {
     // Host components just need their children reconciled
     // (the children were already set during initial fiber creation)
     return fiber.child

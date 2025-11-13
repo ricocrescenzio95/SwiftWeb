@@ -31,7 +31,7 @@ struct FiberConverter {
     }
 
     let fiber = Fiber(
-      tag: .hostComponent,
+      tag: .hostDOM,
       type: element.name,
       pendingProps: attrs
     )
@@ -88,7 +88,7 @@ struct FiberConverter {
 
   func convertComponent(_ component: any ComponentNode, lane: Lane) -> Fiber? {
     let fiber = Fiber(
-      tag: .functionComponent,
+      tag: .component,
       type: "#component"
     )
     fiber.sourceNode = component
