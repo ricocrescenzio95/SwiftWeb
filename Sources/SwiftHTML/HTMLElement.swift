@@ -25,12 +25,6 @@ public struct rawHTML: Node {
   }
 }
 
-// MARK: - Document and Structure
-
-public func html(_ attributes: HTMLAttribute<Void>..., @HTMLBuilder content: () -> some Node) -> HTMLElement<Void, some Node> {
-  .init(name: "html", attributes: attributes, content: content())
-}
-
 // MARK: - Document Metadata
 
 public func head(_ attributes: HTMLAttribute<Void>..., @HTMLBuilder content: () -> some Node) -> HTMLElement<Void, some Node> {

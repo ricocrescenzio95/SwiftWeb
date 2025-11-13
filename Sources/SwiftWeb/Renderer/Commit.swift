@@ -107,8 +107,8 @@ final class CommitPhase {
     // Find the parent DOM node
     guard let parentDOMNode = findParentDOMNode(fiber) else {
       // No parent - this must be the root
-      if fiber.type == "html" {
-        _ = JSObject.global.document.object!.documentElement.replaceWith(domNode)
+      if fiber.type == "body" {
+        _ = JSObject.global.document.body.replaceWith(domNode)
       } else {
         _ = JSObject.global.document.body.appendChild(domNode)
       }

@@ -1,5 +1,7 @@
 <!DOCTYPE html>
 <script type="module">
+  import "./style.css";
+
   const { init: standardInit } = await import("./.build/plugins/PackageToJS/outputs/Package/index.js");
 
   async function initWithCustomMemory() {

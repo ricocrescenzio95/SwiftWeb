@@ -1,9 +1,13 @@
 import { defineConfig } from 'vite'
 import path from 'path'
 import { swiftErrorOverlay } from './vite-plugin-swift-errors.js'
+import tailwindcss from '@tailwindcss/vite'
 
 export default defineConfig({
-  plugins: [swiftErrorOverlay()],
+  plugins: [
+    swiftErrorOverlay(),
+    tailwindcss()
+  ],
   server: {
     port: 8080,
     open: true,
