@@ -9,7 +9,7 @@ public protocol DOMEvent {
 }
 
 /// Represents a PointerEvent from the DOM
-public struct PointerEvent: DOMEvent, CustomStringConvertible {
+public struct PointerEvent<TargetElement: EventElement>: DOMEvent, CustomStringConvertible {
   public let jsValue: JSValue
   
   public init(jsValue: JSValue) {
@@ -167,15 +167,8 @@ public struct PointerEvent: DOMEvent, CustomStringConvertible {
     jsValue.type.string ?? ""
   }
   
-  /// Event target element
-  public var target: JSValue {
-    jsValue.target
-  }
-  
-  /// Current event target
-  public var currentTarget: JSValue {
-    jsValue.currentTarget
-  }
+  public var target: TargetElement.Element { TargetElement.makeEventElement(from: jsValue.target) }
+  public var currentTarget: TargetElement.Element { TargetElement.makeEventElement(from: jsValue.currentTarget) }
   
   /// Timestamp when the event was created
   public var timeStamp: Double {
@@ -241,7 +234,7 @@ public enum PointerType: String {
 }
 
 /// Represents a MouseEvent from the DOM
-public struct MouseEvent: DOMEvent, CustomStringConvertible {
+public struct MouseEvent<TargetElement: EventElement>: DOMEvent, CustomStringConvertible {
   public let jsValue: JSValue
   
   public init(jsValue: JSValue) {
@@ -293,8 +286,8 @@ public struct MouseEvent: DOMEvent, CustomStringConvertible {
   
   // Event properties
   public var type: String { jsValue.type.string ?? "" }
-  public var target: JSValue { jsValue.target }
-  public var currentTarget: JSValue { jsValue.currentTarget }
+  public var target: TargetElement.Element { TargetElement.makeEventElement(from: jsValue.target) }
+  public var currentTarget: TargetElement.Element { TargetElement.makeEventElement(from: jsValue.currentTarget) }
   public var timeStamp: Double { jsValue.timeStamp.number ?? 0 }
   
   // Methods
@@ -303,7 +296,7 @@ public struct MouseEvent: DOMEvent, CustomStringConvertible {
 }
 
 /// Represents a KeyboardEvent from the DOM
-public struct KeyboardEvent: DOMEvent, CustomStringConvertible {
+public struct KeyboardEvent<TargetElement: EventElement>: DOMEvent, CustomStringConvertible {
   public let jsValue: JSValue
   
   public init(jsValue: JSValue) {
@@ -349,15 +342,16 @@ public struct KeyboardEvent: DOMEvent, CustomStringConvertible {
   
   // Event properties
   public var type: String { jsValue.type.string ?? "" }
-  public var target: JSValue { jsValue.target }
-  
+  public var target: TargetElement.Element { TargetElement.makeEventElement(from: jsValue.target) }
+  public var currentTarget: TargetElement.Element { TargetElement.makeEventElement(from: jsValue.currentTarget) }
+
   // Methods
   public func preventDefault() { _ = jsValue.preventDefault() }
   public func stopPropagation() { _ = jsValue.stopPropagation() }
 }
 
 /// Represents an InputEvent from the DOM
-public struct InputEvent: DOMEvent, CustomStringConvertible {
+public struct InputEvent<TargetElement: EventElement>: DOMEvent, CustomStringConvertible {
   public let jsValue: JSValue
   
   public init(jsValue: JSValue) {
@@ -382,14 +376,15 @@ public struct InputEvent: DOMEvent, CustomStringConvertible {
   
   // Event properties
   public var type: String { jsValue.type.string ?? "" }
-  public var target: JSValue { jsValue.target }
-  
+  public var target: TargetElement.Element { TargetElement.makeEventElement(from: jsValue.target) }
+  public var currentTarget: TargetElement.Element { TargetElement.makeEventElement(from: jsValue.currentTarget) }
+
   // Methods
   public func preventDefault() { _ = jsValue.preventDefault() }
 }
 
 /// Represents a FocusEvent from the DOM
-public struct FocusEvent: DOMEvent, CustomStringConvertible {
+public struct FocusEvent<TargetElement: EventElement>: DOMEvent, CustomStringConvertible {
   public let jsValue: JSValue
   
   public init(jsValue: JSValue) {
@@ -410,14 +405,15 @@ public struct FocusEvent: DOMEvent, CustomStringConvertible {
   
   // Event properties
   public var type: String { jsValue.type.string ?? "" }
-  public var target: JSValue { jsValue.target }
-  
+  public var target: TargetElement.Element { TargetElement.makeEventElement(from: jsValue.target) }
+  public var currentTarget: TargetElement.Element { TargetElement.makeEventElement(from: jsValue.currentTarget) }
+
   // Methods
   public func preventDefault() { _ = jsValue.preventDefault() }
 }
 
 /// Represents a generic Event from the DOM (fallback)
-public struct GenericEvent: DOMEvent, CustomStringConvertible {
+public struct GenericEvent<TargetElement: EventElement>: DOMEvent, CustomStringConvertible {
   public let jsValue: JSValue
   
   public init(jsValue: JSValue) {
@@ -434,8 +430,8 @@ public struct GenericEvent: DOMEvent, CustomStringConvertible {
   }
   
   public var type: String { jsValue.type.string ?? "" }
-  public var target: JSValue { jsValue.target }
-  public var currentTarget: JSValue { jsValue.currentTarget }
+  public var target: TargetElement.Element { TargetElement.makeEventElement(from: jsValue.target) }
+  public var currentTarget: TargetElement.Element { TargetElement.makeEventElement(from: jsValue.currentTarget) }
   public var timeStamp: Double { jsValue.timeStamp.number ?? 0 }
   
   public func preventDefault() { _ = jsValue.preventDefault() }
@@ -449,201 +445,201 @@ public struct HTMLEvent {
   public let handler: (sending JSValue) -> Void
 }
 
-public struct EventNode<Content: Node>: Node {
+public struct EventNode<AttributesType, Content: Node>: Node {
   var events: [HTMLEvent]
   public var content: Content
 }
 
 // MARK: - Type-Safe Event Extensions
 
-extension HTMLElement {
+extension HTMLElement where AttributesType: EventElement {
   // MARK: - Pointer Events (Type-Safe)
   
-  public func onPointerDown(_ perform: @escaping (PointerEvent) -> Void) -> EventNode<Self> {
+  public func onPointerDown(_ perform: @escaping (PointerEvent<AttributesType>) -> Void) -> EventNode<AttributesType, Self> {
     EventNode(events: [.init(key: "pointerdown", handler: { perform(PointerEvent(jsValue: $0)) })], content: self)
   }
   
-  public func onPointerUp(_ perform: @escaping (PointerEvent) -> Void) -> EventNode<Self> {
+  public func onPointerUp(_ perform: @escaping (PointerEvent<AttributesType>) -> Void) -> EventNode<AttributesType, Self> {
     EventNode(events: [.init(key: "pointerup", handler: { perform(PointerEvent(jsValue: $0)) })], content: self)
   }
   
-  public func onPointerMove(_ perform: @escaping (PointerEvent) -> Void) -> EventNode<Self> {
+  public func onPointerMove(_ perform: @escaping (PointerEvent<AttributesType>) -> Void) -> EventNode<AttributesType, Self> {
     EventNode(events: [.init(key: "pointermove", handler: { perform(PointerEvent(jsValue: $0)) })], content: self)
   }
   
-  public func onPointerEnter(_ perform: @escaping (PointerEvent) -> Void) -> EventNode<Self> {
+  public func onPointerEnter(_ perform: @escaping (PointerEvent<AttributesType>) -> Void) -> EventNode<AttributesType, Self> {
     EventNode(events: [.init(key: "pointerenter", handler: { perform(PointerEvent(jsValue: $0)) })], content: self)
   }
   
-  public func onPointerLeave(_ perform: @escaping (PointerEvent) -> Void) -> EventNode<Self> {
+  public func onPointerLeave(_ perform: @escaping (PointerEvent<AttributesType>) -> Void) -> EventNode<AttributesType, Self> {
     EventNode(events: [.init(key: "pointerleave", handler: { perform(PointerEvent(jsValue: $0)) })], content: self)
   }
   
-  public func onPointerCancel(_ perform: @escaping (PointerEvent) -> Void) -> EventNode<Self> {
+  public func onPointerCancel(_ perform: @escaping (PointerEvent<AttributesType>) -> Void) -> EventNode<AttributesType, Self> {
     EventNode(events: [.init(key: "pointercancel", handler: { perform(PointerEvent(jsValue: $0)) })], content: self)
   }
   
   // MARK: - Mouse Events (Type-Safe)
   
-  public func onMouseDown(_ perform: @escaping (MouseEvent) -> Void) -> EventNode<Self> {
+  public func onMouseDown(_ perform: @escaping (MouseEvent<AttributesType>) -> Void) -> EventNode<AttributesType, Self> {
     EventNode(events: [.init(key: "mousedown", handler: { perform(MouseEvent(jsValue: $0)) })], content: self)
   }
   
-  public func onMouseUp(_ perform: @escaping (MouseEvent) -> Void) -> EventNode<Self> {
+  public func onMouseUp(_ perform: @escaping (MouseEvent<AttributesType>) -> Void) -> EventNode<AttributesType, Self> {
     EventNode(events: [.init(key: "mouseup", handler: { perform(MouseEvent(jsValue: $0)) })], content: self)
   }
   
-  public func onMouseMove(_ perform: @escaping (MouseEvent) -> Void) -> EventNode<Self> {
+  public func onMouseMove(_ perform: @escaping (MouseEvent<AttributesType>) -> Void) -> EventNode<AttributesType, Self> {
     EventNode(events: [.init(key: "mousemove", handler: { perform(MouseEvent(jsValue: $0)) })], content: self)
   }
   
-  public func onMouseEnter(_ perform: @escaping (MouseEvent) -> Void) -> EventNode<Self> {
+  public func onMouseEnter(_ perform: @escaping (MouseEvent<AttributesType>) -> Void) -> EventNode<AttributesType, Self> {
     EventNode(events: [.init(key: "mouseenter", handler: { perform(MouseEvent(jsValue: $0)) })], content: self)
   }
   
-  public func onMouseLeave(_ perform: @escaping (MouseEvent) -> Void) -> EventNode<Self> {
+  public func onMouseLeave(_ perform: @escaping (MouseEvent<AttributesType>) -> Void) -> EventNode<AttributesType, Self> {
     EventNode(events: [.init(key: "mouseleave", handler: { perform(MouseEvent(jsValue: $0)) })], content: self)
   }
   
   // MARK: - Click Events (Type-Safe with PointerEvent)
   
   /// Click event with type-safe PointerEvent
-  public func onClick(_ perform: @escaping (PointerEvent) -> Void) -> EventNode<Self> {
+  public func onClick(_ perform: @escaping (PointerEvent<AttributesType>) -> Void) -> EventNode<AttributesType, Self> {
     EventNode(events: [.init(key: "click", handler: { perform(PointerEvent(jsValue: $0)) })], content: self)
   }
   
   /// Click event without parameters
-  public func onClick(_ perform: @escaping () -> Void) -> EventNode<Self> {
+  public func onClick(_ perform: @escaping () -> Void) -> EventNode<AttributesType, Self> {
     EventNode(events: [.init(key: "click", handler: { _ in perform() })], content: self)
   }
   
   /// Double-click event
-  public func onDoubleClick(_ perform: @escaping (PointerEvent) -> Void) -> EventNode<Self> {
+  public func onDoubleClick(_ perform: @escaping (PointerEvent<AttributesType>) -> Void) -> EventNode<AttributesType, Self> {
     EventNode(events: [.init(key: "dblclick", handler: { perform(PointerEvent(jsValue: $0)) })], content: self)
   }
   
   /// Context menu (right-click) event
-  public func onContextMenu(_ perform: @escaping (PointerEvent) -> Void) -> EventNode<Self> {
+  public func onContextMenu(_ perform: @escaping (PointerEvent<AttributesType>) -> Void) -> EventNode<AttributesType, Self> {
     EventNode(events: [.init(key: "contextmenu", handler: { perform(PointerEvent(jsValue: $0)) })], content: self)
   }
   
   // MARK: - Keyboard Events (Type-Safe)
   
-  public func onKeyDown(_ perform: @escaping (KeyboardEvent) -> Void) -> EventNode<Self> {
+  public func onKeyDown(_ perform: @escaping (KeyboardEvent<AttributesType>) -> Void) -> EventNode<AttributesType, Self> {
     EventNode(events: [.init(key: "keydown", handler: { perform(KeyboardEvent(jsValue: $0)) })], content: self)
   }
   
-  public func onKeyUp(_ perform: @escaping (KeyboardEvent) -> Void) -> EventNode<Self> {
+  public func onKeyUp(_ perform: @escaping (KeyboardEvent<AttributesType>) -> Void) -> EventNode<AttributesType, Self> {
     EventNode(events: [.init(key: "keyup", handler: { perform(KeyboardEvent(jsValue: $0)) })], content: self)
   }
   
-  public func onKeyPress(_ perform: @escaping (KeyboardEvent) -> Void) -> EventNode<Self> {
+  public func onKeyPress(_ perform: @escaping (KeyboardEvent<AttributesType>) -> Void) -> EventNode<AttributesType, Self> {
     EventNode(events: [.init(key: "keypress", handler: { perform(KeyboardEvent(jsValue: $0)) })], content: self)
   }
   
   // MARK: - Input Events (Type-Safe)
   
-  public func onInput(_ perform: @escaping (InputEvent) -> Void) -> EventNode<Self> {
+  public func onInput(_ perform: @escaping (InputEvent<AttributesType>) -> Void) -> EventNode<AttributesType, Self> {
     EventNode(events: [.init(key: "input", handler: { perform(InputEvent(jsValue: $0)) })], content: self)
   }
   
-  public func onChange(_ perform: @escaping (GenericEvent) -> Void) -> EventNode<Self> {
+  public func onChange(_ perform: @escaping (GenericEvent<AttributesType>) -> Void) -> EventNode<AttributesType, Self> {
     EventNode(events: [.init(key: "change", handler: { perform(GenericEvent(jsValue: $0)) })], content: self)
   }
   
   // MARK: - Focus Events (Type-Safe)
   
-  public func onFocus(_ perform: @escaping (FocusEvent) -> Void) -> EventNode<Self> {
+  public func onFocus(_ perform: @escaping (FocusEvent<AttributesType>) -> Void) -> EventNode<AttributesType, Self> {
     EventNode(events: [.init(key: "focus", handler: { perform(FocusEvent(jsValue: $0)) })], content: self)
   }
   
-  public func onBlur(_ perform: @escaping (FocusEvent) -> Void) -> EventNode<Self> {
+  public func onBlur(_ perform: @escaping (FocusEvent<AttributesType>) -> Void) -> EventNode<AttributesType, Self> {
     EventNode(events: [.init(key: "blur", handler: { perform(FocusEvent(jsValue: $0)) })], content: self)
   }
   
-  public func onFocusIn(_ perform: @escaping (FocusEvent) -> Void) -> EventNode<Self> {
+  public func onFocusIn(_ perform: @escaping (FocusEvent<AttributesType>) -> Void) -> EventNode<AttributesType, Self> {
     EventNode(events: [.init(key: "focusin", handler: { perform(FocusEvent(jsValue: $0)) })], content: self)
   }
   
-  public func onFocusOut(_ perform: @escaping (FocusEvent) -> Void) -> EventNode<Self> {
+  public func onFocusOut(_ perform: @escaping (FocusEvent<AttributesType>) -> Void) -> EventNode<AttributesType, Self> {
     EventNode(events: [.init(key: "focusout", handler: { perform(FocusEvent(jsValue: $0)) })], content: self)
   }
   
   // MARK: - Generic Events
   
-  public func onSubmit(_ perform: @escaping (GenericEvent) -> Void) -> EventNode<Self> {
+  public func onSubmit(_ perform: @escaping (GenericEvent<AttributesType>) -> Void) -> EventNode<AttributesType, Self> {
     EventNode(events: [.init(key: "submit", handler: { perform(GenericEvent(jsValue: $0)) })], content: self)
   }
   
-  public func onScroll(_ perform: @escaping (GenericEvent) -> Void) -> EventNode<Self> {
+  public func onScroll(_ perform: @escaping (GenericEvent<AttributesType>) -> Void) -> EventNode<AttributesType, Self> {
     EventNode(events: [.init(key: "scroll", handler: { perform(GenericEvent(jsValue: $0)) })], content: self)
   }
 }
 
 // MARK: - Type-Safe Event Extensions for EventNode
 
-extension EventNode {
+extension EventNode where AttributesType: EventElement {
   // MARK: - Pointer Events
   
-  public func onPointerDown(_ perform: @escaping (PointerEvent) -> Void) -> EventNode<Content> {
+  public func onPointerDown(_ perform: @escaping (PointerEvent<AttributesType>) -> Void) -> EventNode<AttributesType, Content> {
     EventNode(events: events + [.init(key: "pointerdown", handler: { perform(PointerEvent(jsValue: $0)) })], content: content)
   }
   
-  public func onPointerUp(_ perform: @escaping (PointerEvent) -> Void) -> EventNode<Content> {
+  public func onPointerUp(_ perform: @escaping (PointerEvent<AttributesType>) -> Void) -> EventNode<AttributesType, Content> {
     EventNode(events: events + [.init(key: "pointerup", handler: { perform(PointerEvent(jsValue: $0)) })], content: content)
   }
   
-  public func onPointerMove(_ perform: @escaping (PointerEvent) -> Void) -> EventNode<Content> {
+  public func onPointerMove(_ perform: @escaping (PointerEvent<AttributesType>) -> Void) -> EventNode<AttributesType, Content> {
     EventNode(events: events + [.init(key: "pointermove", handler: { perform(PointerEvent(jsValue: $0)) })], content: content)
   }
   
   // MARK: - Click Events
   
-  public func onClick(_ perform: @escaping (PointerEvent) -> Void) -> EventNode<Content> {
+  public func onClick(_ perform: @escaping (PointerEvent<AttributesType>) -> Void) -> EventNode<AttributesType, Content> {
     EventNode(events: events + [.init(key: "click", handler: { perform(PointerEvent(jsValue: $0)) })], content: content)
   }
   
-  public func onClick(_ perform: @escaping () -> Void) -> EventNode<Content> {
+  public func onClick(_ perform: @escaping () -> Void) -> EventNode<AttributesType, Content> {
     EventNode(events: events + [.init(key: "click", handler: { _ in perform() })], content: content)
   }
   
   // MARK: - Mouse Events
   
-  public func onMouseDown(_ perform: @escaping (MouseEvent) -> Void) -> EventNode<Content> {
+  public func onMouseDown(_ perform: @escaping (MouseEvent<AttributesType>) -> Void) -> EventNode<AttributesType, Content> {
     EventNode(events: events + [.init(key: "mousedown", handler: { perform(MouseEvent(jsValue: $0)) })], content: content)
   }
   
-  public func onMouseMove(_ perform: @escaping (MouseEvent) -> Void) -> EventNode<Content> {
+  public func onMouseMove(_ perform: @escaping (MouseEvent<AttributesType>) -> Void) -> EventNode<AttributesType, Content> {
     EventNode(events: events + [.init(key: "mousemove", handler: { perform(MouseEvent(jsValue: $0)) })], content: content)
   }
   
   // MARK: - Keyboard Events
   
-  public func onKeyDown(_ perform: @escaping (KeyboardEvent) -> Void) -> EventNode<Content> {
+  public func onKeyDown(_ perform: @escaping (KeyboardEvent<AttributesType>) -> Void) -> EventNode<AttributesType, Content> {
     EventNode(events: events + [.init(key: "keydown", handler: { perform(KeyboardEvent(jsValue: $0)) })], content: content)
   }
   
-  public func onKeyUp(_ perform: @escaping (KeyboardEvent) -> Void) -> EventNode<Content> {
+  public func onKeyUp(_ perform: @escaping (KeyboardEvent<AttributesType>) -> Void) -> EventNode<AttributesType, Content> {
     EventNode(events: events + [.init(key: "keyup", handler: { perform(KeyboardEvent(jsValue: $0)) })], content: content)
   }
   
   // MARK: - Input Events
   
-  public func onInput(_ perform: @escaping (InputEvent) -> Void) -> EventNode<Content> {
+  public func onInput(_ perform: @escaping (InputEvent<AttributesType>) -> Void) -> EventNode<AttributesType, Content> {
     EventNode(events: events + [.init(key: "input", handler: { perform(InputEvent(jsValue: $0)) })], content: content)
   }
   
-  public func onChange(_ perform: @escaping (GenericEvent) -> Void) -> EventNode<Content> {
+  public func onChange(_ perform: @escaping (GenericEvent<AttributesType>) -> Void) -> EventNode<AttributesType, Content> {
     EventNode(events: events + [.init(key: "change", handler: { perform(GenericEvent(jsValue: $0)) })], content: content)
   }
   
   // MARK: - Focus Events
   
-  public func onFocus(_ perform: @escaping (FocusEvent) -> Void) -> EventNode<Content> {
+  public func onFocus(_ perform: @escaping (FocusEvent<AttributesType>) -> Void) -> EventNode<AttributesType, Content> {
     EventNode(events: events + [.init(key: "focus", handler: { perform(FocusEvent(jsValue: $0)) })], content: content)
   }
   
-  public func onBlur(_ perform: @escaping (FocusEvent) -> Void) -> EventNode<Content> {
+  public func onBlur(_ perform: @escaping (FocusEvent<AttributesType>) -> Void) -> EventNode<AttributesType, Content> {
     EventNode(events: events + [.init(key: "blur", handler: { perform(FocusEvent(jsValue: $0)) })], content: content)
   }
 }

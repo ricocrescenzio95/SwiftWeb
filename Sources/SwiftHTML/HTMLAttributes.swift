@@ -1,101 +1,3 @@
-// MARK: - Element-Specific Attribute Types
-
-/// Marker type for elements that support form-related attributes
-public enum FormElement {}
-
-/// Marker type for elements that support input-specific attributes
-public enum InputElement {}
-
-/// Marker type for elements that support media-related attributes
-public enum MediaElement {}
-
-/// Marker type for elements that support table cell attributes
-public enum TableCellElement {}
-
-/// Marker type for elements that support link/anchor attributes
-public enum LinkElement {}
-
-/// Marker type for elements that support image attributes
-public enum ImageElement {}
-
-/// Marker type for elements that support script attributes
-public enum ScriptElement {}
-
-/// Marker type for elements that support iframe attributes
-public enum IframeElement {}
-
-/// Marker type for elements that support list item attributes
-public enum ListItemElement {}
-
-/// Marker type for elements that support ordered list attributes
-public enum OrderedListElement {}
-
-/// Marker type for elements that support textarea attributes
-public enum TextareaElement {}
-
-/// Marker type for elements that support select attributes
-public enum SelectElement {}
-
-/// Marker type for elements that support button attributes
-public enum ButtonElement {}
-
-/// Marker type for elements that support label attributes
-public enum LabelElement {}
-
-/// Marker type for elements that support meter/progress attributes
-public enum MeterElement {}
-
-/// Marker type for elements that support details attributes
-public enum DetailsElement {}
-
-/// Marker type for elements that support dialog attributes
-public enum DialogElement {}
-
-/// Marker type for elements that support canvas attributes
-public enum CanvasElement {}
-
-/// Marker type for elements that support track attributes
-public enum TrackElement {}
-
-/// Marker type for elements that support area attributes
-public enum AreaElement {}
-
-/// Marker type for elements that support source attributes
-public enum SourceElement {}
-
-/// Marker type for elements that support embed attributes
-public enum EmbedElement {}
-
-/// Marker type for elements that support object attributes
-public enum ObjectElement {}
-
-/// Marker type for elements that support option attributes
-public enum OptionElement {}
-
-/// Marker type for elements that support optgroup attributes
-public enum OptgroupElement {}
-
-/// Marker type for elements that support fieldset attributes
-public enum FieldsetElement {}
-
-/// Marker type for elements that support output attributes
-public enum OutputElement {}
-
-/// Marker type for elements that support data attributes
-public enum DataElement {}
-
-/// Marker type for elements that support time attributes
-public enum TimeElement {}
-
-/// Marker type for elements that support blockquote/q attributes
-public enum QuoteElement {}
-
-/// Marker type for elements that support del/ins attributes
-public enum ModElement {}
-
-/// Marker type for elements that support col/colgroup attributes
-public enum ColElement {}
-
 // MARK: - Enums for Attribute Values
 
 public enum Dir: String { case ltr, rtl, auto }
@@ -297,7 +199,7 @@ public extension HTMLAttribute {
 
 // MARK: - Input Element Attributes
 
-public extension HTMLAttribute where AttributeType == InputElement {
+public extension HTMLAttribute where AttributeType == InputHTMLAttribute {
   static func type(_ v: InputType) -> Self { .init(key: "type", value: v.rawValue) }
   static func accept(_ v: String) -> Self { .init(key: "accept", value: v) }
   static func autocomplete(_ v: Autocomplete) -> Self { .init(key: "autocomplete", value: v.rawValue) }
@@ -336,7 +238,7 @@ public extension HTMLAttribute where AttributeType == InputElement {
 
 // MARK: - Button Element Attributes
 
-public extension HTMLAttribute where AttributeType == ButtonElement {
+public extension HTMLAttribute where AttributeType == ButtonHTMLAttribute {
   static func type(_ v: ButtonType) -> Self { .init(key: "type", value: v.rawValue) }
   static func disabled(_ on: Bool) -> Self { .init(key: "disabled", value: on ? "" : nil) }
   static var disabled: Self { .disabled(true) }
@@ -353,7 +255,7 @@ public extension HTMLAttribute where AttributeType == ButtonElement {
 
 // MARK: - Form Element Attributes
 
-public extension HTMLAttribute where AttributeType == FormElement {
+public extension HTMLAttribute where AttributeType == FormHTMLAttribute {
   static func acceptCharset(_ v: String) -> Self { .init(key: "accept-charset", value: v) }
   static func action(_ v: String) -> Self { .init(key: "action", value: v) }
   static func autocomplete(_ v: Autocomplete) -> Self { .init(key: "autocomplete", value: v.rawValue) }
@@ -366,7 +268,7 @@ public extension HTMLAttribute where AttributeType == FormElement {
 
 // MARK: - Select Element Attributes
 
-public extension HTMLAttribute where AttributeType == SelectElement {
+public extension HTMLAttribute where AttributeType == SelectHTMLAttribute {
   static func autocomplete(_ v: Autocomplete) -> Self { .init(key: "autocomplete", value: v.rawValue) }
   static func disabled(_ on: Bool) -> Self { .init(key: "disabled", value: on ? "" : nil) }
   static var disabled: Self { .disabled(true) }
@@ -380,7 +282,7 @@ public extension HTMLAttribute where AttributeType == SelectElement {
 
 // MARK: - Textarea Element Attributes
 
-public extension HTMLAttribute where AttributeType == TextareaElement {
+public extension HTMLAttribute where AttributeType == TextareaHTMLAttribute {
   static func autocomplete(_ v: Autocomplete) -> Self { .init(key: "autocomplete", value: v.rawValue) }
   static func cols(_ v: some BinaryInteger) -> Self { .init(key: "cols", value: "\(v)") }
   static func dirname(_ v: String) -> Self { .init(key: "dirname", value: v) }
@@ -399,13 +301,13 @@ public extension HTMLAttribute where AttributeType == TextareaElement {
 
 // MARK: - Label Element Attributes
 
-public extension HTMLAttribute where AttributeType == LabelElement {
+public extension HTMLAttribute where AttributeType == LabelHTMLAttribute {
   static func `for`(_ v: String) -> Self { .init(key: "for", value: v) }
 }
 
 // MARK: - Image Element Attributes
 
-public extension HTMLAttribute where AttributeType == ImageElement {
+public extension HTMLAttribute where AttributeType == ImgHTMLAttribute {
   static func crossorigin(_ v: CrossOrigin) -> Self { .init(key: "crossorigin", value: v.rawValue) }
   static func decoding(_ v: Decoding) -> Self { .init(key: "decoding", value: v.rawValue) }
   static func fetchpriority(_ v: FetchPriority) -> Self { .init(key: "fetchpriority", value: v.rawValue) }
@@ -420,7 +322,7 @@ public extension HTMLAttribute where AttributeType == ImageElement {
 
 // MARK: - Link Element Attributes
 
-public extension HTMLAttribute where AttributeType == LinkElement {
+public extension HTMLAttribute where AttributeType == LinkHTMLAttribute {
   static func `as`(_ v: String) -> Self { .init(key: "as", value: v) }
   static func crossorigin(_ v: CrossOrigin) -> Self { .init(key: "crossorigin", value: v.rawValue) }
   static func fetchpriority(_ v: FetchPriority) -> Self { .init(key: "fetchpriority", value: v.rawValue) }
@@ -440,7 +342,11 @@ public extension HTMLAttribute where AttributeType == LinkElement {
 
 // MARK: - Media Element Attributes (Audio/Video)
 
-public extension HTMLAttribute where AttributeType == MediaElement {
+public protocol MediaAttribute {}
+extension VideoHTMLAttribute: MediaAttribute {}
+extension AudioHTMLAttribute: MediaAttribute {}
+
+public extension HTMLAttribute where AttributeType: MediaAttribute {
   static func autoplay(_ on: Bool) -> Self { .init(key: "autoplay", value: on ? "" : nil) }
   static var autoplay: Self { .autoplay(true) }
   static func controls(_ on: Bool) -> Self { .init(key: "controls", value: on ? "" : nil) }
@@ -463,7 +369,7 @@ public extension HTMLAttribute where AttributeType == MediaElement {
 
 // MARK: - Table Cell Attributes (td/th)
 
-public extension HTMLAttribute where AttributeType == TableCellElement {
+public extension HTMLAttribute where AttributeType == TableHTMLAttribute {
   static func colspan(_ v: some BinaryInteger) -> Self { .init(key: "colspan", value: "\(v)") }
   static func rowspan(_ v: some BinaryInteger) -> Self { .init(key: "rowspan", value: "\(v)") }
   static func headers(_ ids: [String]) -> Self { .init(key: "headers", value: ids.joined(separator: " ")) }
@@ -473,7 +379,7 @@ public extension HTMLAttribute where AttributeType == TableCellElement {
 
 // MARK: - Ordered List Attributes
 
-public extension HTMLAttribute where AttributeType == OrderedListElement {
+public extension HTMLAttribute where AttributeType == OlHTMLAttribute {
   static func reversed(_ on: Bool) -> Self { .init(key: "reversed", value: on ? "" : nil) }
   static var reversed: Self { .reversed(true) }
   static func start(_ v: some BinaryInteger) -> Self { .init(key: "start", value: "\(v)") }
@@ -482,13 +388,13 @@ public extension HTMLAttribute where AttributeType == OrderedListElement {
 
 // MARK: - List Item Attributes
 
-public extension HTMLAttribute where AttributeType == ListItemElement {
+public extension HTMLAttribute where AttributeType == LiHTMLAttribute {
   static func value(_ v: some BinaryInteger) -> Self { .init(key: "value", value: "\(v)") }
 }
 
 // MARK: - Meter Element Attributes
 
-public extension HTMLAttribute where AttributeType == MeterElement {
+public extension HTMLAttribute where AttributeType == MeterHTMLAttribute {
   static func min(_ v: some Numeric) -> Self { .init(key: "min", value: "\(v)") }
   static func max(_ v: some Numeric) -> Self { .init(key: "max", value: "\(v)") }
   static func low(_ v: some Numeric) -> Self { .init(key: "low", value: "\(v)") }
@@ -498,7 +404,7 @@ public extension HTMLAttribute where AttributeType == MeterElement {
 
 // MARK: - Script Element Attributes
 
-public extension HTMLAttribute where AttributeType == ScriptElement {
+public extension HTMLAttribute where AttributeType == ScriptHTMLAttribute {
   static func async(_ on: Bool) -> Self { .init(key: "async", value: on ? "" : nil) }
   static var async: Self { .async(true) }
   static func blocking(_ v: String) -> Self { .init(key: "blocking", value: v) }
@@ -515,7 +421,7 @@ public extension HTMLAttribute where AttributeType == ScriptElement {
 
 // MARK: - Iframe Element Attributes
 
-public extension HTMLAttribute where AttributeType == IframeElement {
+public extension HTMLAttribute where AttributeType == IframeHTMLAttribute {
   static func allow(_ v: String) -> Self { .init(key: "allow", value: v) }
   static func allowfullscreen(_ on: Bool) -> Self { .init(key: "allowfullscreen", value: on ? "" : nil) }
   static var allowfullscreen: Self { .allowfullscreen(true) }
@@ -531,27 +437,27 @@ public extension HTMLAttribute where AttributeType == IframeElement {
 
 // MARK: - Details Element Attributes
 
-public extension HTMLAttribute where AttributeType == DetailsElement {
+public extension HTMLAttribute where AttributeType == DetailsHTMLAttribute {
   static func open(_ on: Bool) -> Self { .init(key: "open", value: on ? "" : nil) }
   static var open: Self { .open(true) }
 }
 
 // MARK: - Dialog Element Attributes
 
-public extension HTMLAttribute where AttributeType == DialogElement {
+public extension HTMLAttribute where AttributeType == DialogHTMLAttribute {
   static func open(_ on: Bool) -> Self { .init(key: "open", value: on ? "" : nil) }
   static var open: Self { .open(true) }
 }
 
 // MARK: - Canvas Element Attributes
 
-public extension HTMLAttribute where AttributeType == CanvasElement {
+public extension HTMLAttribute where AttributeType == CanvasHTMLAttribute {
   // Note: width and height are already in global attributes
 }
 
 // MARK: - Track Element Attributes
 
-public extension HTMLAttribute where AttributeType == TrackElement {
+public extension HTMLAttribute where AttributeType == TrackHTMLAttribute {
   static func `default`(_ on: Bool) -> Self { .init(key: "default", value: on ? "" : nil) }
   static var `default`: Self { .default(true) }
   static func kind(_ v: TrackKind) -> Self { .init(key: "kind", value: v.rawValue) }
@@ -561,7 +467,7 @@ public extension HTMLAttribute where AttributeType == TrackElement {
 
 // MARK: - Area Element Attributes
 
-public extension HTMLAttribute where AttributeType == AreaElement {
+public extension HTMLAttribute where AttributeType == AreaHTMLAttribute {
   static func coords(_ v: String) -> Self { .init(key: "coords", value: v) }
   static func download(_ v: String) -> Self { .init(key: "download", value: v) }
   static func ping(_ urls: [String]) -> Self { .init(key: "ping", value: urls.joined(separator: " ")) }
@@ -571,7 +477,7 @@ public extension HTMLAttribute where AttributeType == AreaElement {
 
 // MARK: - Source Element Attributes
 
-public extension HTMLAttribute where AttributeType == SourceElement {
+public extension HTMLAttribute where AttributeType == SourceHTMLAttribute {
   static func media(_ v: String) -> Self { .init(key: "media", value: v) }
   static func sizes(_ v: String) -> Self { .init(key: "sizes", value: v) }
   static func srcset(_ v: String) -> Self { .init(key: "srcset", value: v) }
@@ -580,13 +486,13 @@ public extension HTMLAttribute where AttributeType == SourceElement {
 
 // MARK: - Embed Element Attributes
 
-public extension HTMLAttribute where AttributeType == EmbedElement {
+public extension HTMLAttribute where AttributeType == EmbedHTMLAttribute {
   static func type(_ v: String) -> Self { .init(key: "type", value: v) }
 }
 
 // MARK: - Object Element Attributes
 
-public extension HTMLAttribute where AttributeType == ObjectElement {
+public extension HTMLAttribute where AttributeType == ObjectHTMLAttribute {
   static func data(_ v: String) -> Self { .init(key: "data", value: v) }
   static func form(_ v: String) -> Self { .init(key: "form", value: v) }
   static func type(_ v: String) -> Self { .init(key: "type", value: v) }
@@ -595,7 +501,7 @@ public extension HTMLAttribute where AttributeType == ObjectElement {
 
 // MARK: - Option Element Attributes
 
-public extension HTMLAttribute where AttributeType == OptionElement {
+public extension HTMLAttribute where AttributeType == OptionHTMLAttribute {
   static func disabled(_ on: Bool) -> Self { .init(key: "disabled", value: on ? "" : nil) }
   static var disabled: Self { .disabled(true) }
   static func selected(_ on: Bool) -> Self { .init(key: "selected", value: on ? "" : nil) }
@@ -604,14 +510,14 @@ public extension HTMLAttribute where AttributeType == OptionElement {
 
 // MARK: - Optgroup Element Attributes
 
-public extension HTMLAttribute where AttributeType == OptgroupElement {
+public extension HTMLAttribute where AttributeType == OptgroupHTMLAttribute {
   static func disabled(_ on: Bool) -> Self { .init(key: "disabled", value: on ? "" : nil) }
   static var disabled: Self { .disabled(true) }
 }
 
 // MARK: - Fieldset Element Attributes
 
-public extension HTMLAttribute where AttributeType == FieldsetElement {
+public extension HTMLAttribute where AttributeType == FieldsetHTMLAttribute {
   static func disabled(_ on: Bool) -> Self { .init(key: "disabled", value: on ? "" : nil) }
   static var disabled: Self { .disabled(true) }
   static func form(_ v: String) -> Self { .init(key: "form", value: v) }
@@ -619,37 +525,7 @@ public extension HTMLAttribute where AttributeType == FieldsetElement {
 
 // MARK: - Output Element Attributes
 
-public extension HTMLAttribute where AttributeType == OutputElement {
+public extension HTMLAttribute where AttributeType == OutputHTMLAttribute {
   static func `for`(_ ids: [String]) -> Self { .init(key: "for", value: ids.joined(separator: " ")) }
   static func form(_ v: String) -> Self { .init(key: "form", value: v) }
-}
-
-// MARK: - Data Element Attributes
-
-public extension HTMLAttribute where AttributeType == DataElement {
-  // value is already in common attributes
-}
-
-// MARK: - Time Element Attributes
-
-public extension HTMLAttribute where AttributeType == TimeElement {
-  // datetime is already in common attributes
-}
-
-// MARK: - Quote Element Attributes (blockquote, q)
-
-public extension HTMLAttribute where AttributeType == QuoteElement {
-  // cite is already in common attributes
-}
-
-// MARK: - Mod Element Attributes (del, ins)
-
-public extension HTMLAttribute where AttributeType == ModElement {
-  // cite and datetime are already in common attributes
-}
-
-// MARK: - Col Element Attributes (col, colgroup)
-
-public extension HTMLAttribute where AttributeType == ColElement {
-  // span is already in common attributes
 }

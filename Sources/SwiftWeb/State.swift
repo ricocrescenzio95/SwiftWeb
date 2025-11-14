@@ -1,7 +1,6 @@
 import Foundation
 import SwiftHTML
 
-@MainActor
 public protocol ComponentNode: Node {
   func __bindStorage(with bindable: some StateBindable)
 
@@ -9,7 +8,7 @@ public protocol ComponentNode: Node {
   nonisolated var content: Content { get }
 }
 
-public protocol StateBindable: AnyObject {
+public protocol StateBindable {
   func bind<T>(stateName: String, to state: State<T>)
 }
 

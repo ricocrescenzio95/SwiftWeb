@@ -5,15 +5,24 @@ public struct ForEach<Data: RandomAccessCollection, ID: Hashable, Content: Node>
   
   package var contents: (Data.Element) -> Content
   
-  public init(_ data: Data, id: @escaping (Data.Element) -> ID, @HTMLBuilder contents: @escaping (Data.Element) -> Content) {
+  init(_ data: Data, id: @escaping (Data.Element) -> ID, @HTMLBuilder contents: @escaping (Data.Element) -> Content) {
     self.data = data
     self.id = id
     self.contents = contents
   }
-  
-  public init(_ data: Data, @HTMLBuilder contents: @escaping (Data.Element) -> Content) where Data.Element: Identifiable, Data.Element.ID == ID {
-    self.data = data
-    self.id = \.id
-    self.contents = contents
-  }
+}
+
+public func forEach<Data: RandomAccessCollection>(
+  _ data: Data,
+  id: @escaping (Data.Element) -> some Hashable,
+  @HTMLBuilder contents: @escaping (Data.Element) -> some Node
+) -> some Node {
+  ForEach(data, id: id, contents: contents)
+}
+
+public func forEach<Data: RandomAccessCollection>(
+  _ data: Data,
+  @HTMLBuilder contents: @escaping (Data.Element) -> some Node
+) -> some Node where Data.Element: Identifiable {
+  ForEach(data, id: \.id, contents: contents)
 }

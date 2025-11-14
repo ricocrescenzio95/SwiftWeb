@@ -12,6 +12,10 @@ struct FiberConverter {
     if let convertible = node as? FiberConvertible {
       return convertible.convert(using: self, lane: lane)
     }
+    
+    if let element = node as? any HTMLElement {
+      return convert(element, lane: lane)
+    }
 
     if let component = node as? any ComponentNode {
       return convertComponent(component, lane: lane)
@@ -22,17 +26,17 @@ struct FiberConverter {
 
   // MARK: - HTML Elements
 
-  func convert<Attrs, Content: Node>(
-    _ element: HTMLElement<Attrs, Content>,
+  func convert<Element: HTMLElement>(
+    _ element: Element,
     lane: Lane
   ) -> Fiber? {
-    let attrs = element.attributes.reduce(into: [:]) { dict, attr in
+    let attrs = element.attributes.reduce(into: [String: String](minimumCapacity: element.attributes.count)) { dict, attr in
       dict[attr.key] = attr.value ?? ""
     }
 
     let fiber = Fiber(
       tag: .hostDOM,
-      type: element.name,
+      type: Element.name,
       pendingProps: attrs
     )
     fiber.sourceNode = element
@@ -56,8 +60,8 @@ struct FiberConverter {
 
   // MARK: - Event Nodes
 
-  func convert<Content: Node>(
-    _ element: EventNode<Content>,
+  func convert<AttributesType, Content: Node>(
+    _ element: EventNode<AttributesType, Content>,
     lane: Lane
   ) -> Fiber? {
     guard let fiber = convert(element.content, lane: lane) else {
@@ -115,7 +119,7 @@ struct FiberConverter {
   // MARK: - Tuples
 
   func convert<First: Node, Second: Node>(
-    _ tuple: _TupleNode<First, Second>,
+    _ tuple: TupleNode<First, Second>,
     lane: Lane
   ) -> Fiber? {
     let first = convert(tuple.first, lane: lane)
@@ -138,7 +142,7 @@ struct FiberConverter {
   // MARK: - Either
 
   func convert<First: Node, Second: Node>(
-    _ either: _EitherNode<First, Second>,
+    _ either: EitherNode<First, Second>,
     lane: Lane
   ) -> Fiber? {
     switch either {
@@ -185,12 +189,6 @@ protocol FiberConvertible {
 
 // MARK: - Extend Types with Fiber Support
 
-extension HTMLElement: FiberConvertible {
-  func convert(using converter: FiberConverter, lane: Lane) -> Fiber? {
-    converter.convert(self, lane: lane)
-  }
-}
-
 extension EventNode: FiberConvertible {
   func convert(using converter: FiberConverter, lane: Lane) -> Fiber? {
     converter.convert(self, lane: lane)
@@ -203,13 +201,13 @@ extension String: FiberConvertible {
   }
 }
 
-extension _TupleNode: FiberConvertible {
+extension TupleNode: FiberConvertible {
   func convert(using converter: FiberConverter, lane: Lane) -> Fiber? {
     converter.convert(self, lane: lane)
   }
 }
 
-extension _EitherNode: FiberConvertible {
+extension EitherNode: FiberConvertible {
   func convert(using converter: FiberConverter, lane: Lane) -> Fiber? {
     converter.convert(self, lane: lane)
   }
@@ -221,7 +219,7 @@ extension ForEach: FiberConvertible {
   }
 }
 
-extension _EmptyNode: FiberConvertible {
+extension EmptyNode: FiberConvertible {
   func convert(using converter: FiberConverter, lane: Lane) -> Fiber? {
     .init(tag: .hostText, type: "")
   }

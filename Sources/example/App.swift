@@ -103,7 +103,7 @@ struct TestApp: App {
       div(.class("box")) {
         h2 { "List with Keys (\(items.count) items)" }
         ul {
-          ForEach(items, id: \.self) { item in
+          forEach(items, id: \.self) { item in
             li { "Item #\(item)" }
           }
         }
