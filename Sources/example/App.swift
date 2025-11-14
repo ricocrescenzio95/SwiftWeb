@@ -95,6 +95,10 @@ struct TestApp: App {
         }
       }
       
+      a(.href("www.google.com"), .target(._blank)) {
+        "Open google"
+      }
+      
       div(.class("box")) {
         h2 { "Lista con Key (\(items.count) items)" }
         ul {

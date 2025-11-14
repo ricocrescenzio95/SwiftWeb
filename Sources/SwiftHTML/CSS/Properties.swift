@@ -13,7 +13,7 @@ extension CSS {
 }
 
 extension CSS {
-  public struct Property: Sendable, Hashable, Codable, Convertible {
+  public struct Property: Sendable, Hashable, Codable, Convertible, ExpressibleByStringLiteral {
     public let cssValue: String
     
     private init(_ cssValue: String) {
@@ -852,6 +852,10 @@ extension CSS {
     
     public static func raw(_ value: String) -> Property {
       Property(value)
+    }
+    
+    public init(stringLiteral value: String) {
+      self = .raw(value)
     }
   }
 }

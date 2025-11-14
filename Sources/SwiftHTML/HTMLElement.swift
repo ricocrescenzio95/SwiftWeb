@@ -39,7 +39,7 @@ public func base(_ attributes: HTMLAttribute<Void>...) -> HTMLElement<Void, some
   .init(name: "base", attributes: attributes, content: _EmptyNode())
 }
 
-public func link(_ attributes: HTMLAttribute<Void>...) -> HTMLElement<Void, some Node> {
+public func link(_ attributes: HTMLAttribute<LinkElement>...) -> HTMLElement<LinkElement, some Node> {
   .init(name: "link", attributes: attributes, content: _EmptyNode())
 }
 
@@ -125,7 +125,7 @@ public func search(_ attributes: HTMLAttribute<Void>..., @HTMLBuilder content: (
 
 // MARK: - Text Content
 
-public func blockquote(_ attributes: HTMLAttribute<Void>..., @HTMLBuilder content: () -> some Node) -> HTMLElement<Void, some Node> {
+public func blockquote(_ attributes: HTMLAttribute<QuoteElement>..., @HTMLBuilder content: () -> some Node) -> HTMLElement<QuoteElement, some Node> {
   .init(name: "blockquote", attributes: attributes, content: content())
 }
 
@@ -157,7 +157,7 @@ public func hr(_ attributes: HTMLAttribute<Void>...) -> HTMLElement<Void, some N
   .init(name: "hr", attributes: attributes, content: _EmptyNode())
 }
 
-public func li(_ attributes: HTMLAttribute<Void>..., @HTMLBuilder content: () -> some Node) -> HTMLElement<Void, some Node> {
+public func li(_ attributes: HTMLAttribute<ListItemElement>..., @HTMLBuilder content: () -> some Node) -> HTMLElement<ListItemElement, some Node> {
   .init(name: "li", attributes: attributes, content: content())
 }
 
@@ -165,7 +165,7 @@ public func menu(_ attributes: HTMLAttribute<Void>..., @HTMLBuilder content: () 
   .init(name: "menu", attributes: attributes, content: content())
 }
 
-public func ol(_ attributes: HTMLAttribute<Void>..., @HTMLBuilder content: () -> some Node) -> HTMLElement<Void, some Node> {
+public func ol(_ attributes: HTMLAttribute<OrderedListElement>..., @HTMLBuilder content: () -> some Node) -> HTMLElement<OrderedListElement, some Node> {
   .init(name: "ol", attributes: attributes, content: content())
 }
 
@@ -183,7 +183,7 @@ public func ul(_ attributes: HTMLAttribute<Void>..., @HTMLBuilder content: () ->
 
 // MARK: - Inline Text Semantics
 
-public func a(_ attributes: HTMLAttribute<Void>..., @HTMLBuilder content: () -> some Node) -> HTMLElement<Void, some Node> {
+public func a(_ attributes: HTMLAttribute<LinkElement>..., @HTMLBuilder content: () -> some Node) -> HTMLElement<LinkElement, some Node> {
   .init(name: "a", attributes: attributes, content: content())
 }
 
@@ -215,7 +215,7 @@ public func code(_ attributes: HTMLAttribute<Void>..., @HTMLBuilder content: () 
   .init(name: "code", attributes: attributes, content: content())
 }
 
-public func data(_ attributes: HTMLAttribute<Void>..., @HTMLBuilder content: () -> some Node) -> HTMLElement<Void, some Node> {
+public func data(_ attributes: HTMLAttribute<DataElement>..., @HTMLBuilder content: () -> some Node) -> HTMLElement<DataElement, some Node> {
   .init(name: "data", attributes: attributes, content: content())
 }
 
@@ -239,7 +239,7 @@ public func mark(_ attributes: HTMLAttribute<Void>..., @HTMLBuilder content: () 
   .init(name: "mark", attributes: attributes, content: content())
 }
 
-public func q(_ attributes: HTMLAttribute<Void>..., @HTMLBuilder content: () -> some Node) -> HTMLElement<Void, some Node> {
+public func q(_ attributes: HTMLAttribute<QuoteElement>..., @HTMLBuilder content: () -> some Node) -> HTMLElement<QuoteElement, some Node> {
   .init(name: "q", attributes: attributes, content: content())
 }
 
@@ -283,7 +283,7 @@ public func sup(_ attributes: HTMLAttribute<Void>..., @HTMLBuilder content: () -
   .init(name: "sup", attributes: attributes, content: content())
 }
 
-public func time(_ attributes: HTMLAttribute<Void>..., @HTMLBuilder content: () -> some Node) -> HTMLElement<Void, some Node> {
+public func time(_ attributes: HTMLAttribute<TimeElement>..., @HTMLBuilder content: () -> some Node) -> HTMLElement<TimeElement, some Node> {
   .init(name: "time", attributes: attributes, content: content())
 }
 
@@ -301,15 +301,15 @@ public func wbr(_ attributes: HTMLAttribute<Void>...) -> HTMLElement<Void, some 
 
 // MARK: - Image and Multimedia
 
-public func area(_ attributes: HTMLAttribute<Void>...) -> HTMLElement<Void, some Node> {
+public func area(_ attributes: HTMLAttribute<AreaElement>...) -> HTMLElement<AreaElement, some Node> {
   .init(name: "area", attributes: attributes, content: _EmptyNode())
 }
 
-public func audio(_ attributes: HTMLAttribute<Void>..., @HTMLBuilder content: () -> some Node) -> HTMLElement<Void, some Node> {
+public func audio(_ attributes: HTMLAttribute<MediaElement>..., @HTMLBuilder content: () -> some Node) -> HTMLElement<MediaElement, some Node> {
   .init(name: "audio", attributes: attributes, content: content())
 }
 
-public func img(_ attributes: HTMLAttribute<Void>...) -> HTMLElement<Void, some Node> {
+public func img(_ attributes: HTMLAttribute<ImageElement>...) -> HTMLElement<ImageElement, some Node> {
   .init(name: "img", attributes: attributes, content: _EmptyNode())
 }
 
@@ -317,25 +317,25 @@ public func map(_ attributes: HTMLAttribute<Void>..., @HTMLBuilder content: () -
   .init(name: "map", attributes: attributes, content: content())
 }
 
-public func track(_ attributes: HTMLAttribute<Void>...) -> HTMLElement<Void, some Node> {
+public func track(_ attributes: HTMLAttribute<TrackElement>...) -> HTMLElement<TrackElement, some Node> {
   .init(name: "track", attributes: attributes, content: _EmptyNode())
 }
 
-public func video(_ attributes: HTMLAttribute<Void>..., @HTMLBuilder content: () -> some Node) -> HTMLElement<Void, some Node> {
+public func video(_ attributes: HTMLAttribute<MediaElement>..., @HTMLBuilder content: () -> some Node) -> HTMLElement<MediaElement, some Node> {
   .init(name: "video", attributes: attributes, content: content())
 }
 
 // MARK: - Embedded Content
 
-public func embed(_ attributes: HTMLAttribute<Void>...) -> HTMLElement<Void, some Node> {
+public func embed(_ attributes: HTMLAttribute<EmbedElement>...) -> HTMLElement<EmbedElement, some Node> {
   .init(name: "embed", attributes: attributes, content: _EmptyNode())
 }
 
-public func iframe(_ attributes: HTMLAttribute<Void>..., @HTMLBuilder content: () -> some Node) -> HTMLElement<Void, some Node> {
+public func iframe(_ attributes: HTMLAttribute<IframeElement>..., @HTMLBuilder content: () -> some Node) -> HTMLElement<IframeElement, some Node> {
   .init(name: "iframe", attributes: attributes, content: content())
 }
 
-public func object(_ attributes: HTMLAttribute<Void>..., @HTMLBuilder content: () -> some Node) -> HTMLElement<Void, some Node> {
+public func object(_ attributes: HTMLAttribute<ObjectElement>..., @HTMLBuilder content: () -> some Node) -> HTMLElement<ObjectElement, some Node> {
   .init(name: "object", attributes: attributes, content: content())
 }
 
@@ -347,7 +347,7 @@ public func portal(_ attributes: HTMLAttribute<Void>..., @HTMLBuilder content: (
   .init(name: "portal", attributes: attributes, content: content())
 }
 
-public func source(_ attributes: HTMLAttribute<Void>...) -> HTMLElement<Void, some Node> {
+public func source(_ attributes: HTMLAttribute<SourceElement>...) -> HTMLElement<SourceElement, some Node> {
   .init(name: "source", attributes: attributes, content: _EmptyNode())
 }
 
@@ -363,7 +363,7 @@ public func math(_ attributes: HTMLAttribute<Void>..., @HTMLBuilder content: () 
 
 // MARK: - Scripting
 
-public func canvas(_ attributes: HTMLAttribute<Void>..., @HTMLBuilder content: () -> some Node) -> HTMLElement<Void, some Node> {
+public func canvas(_ attributes: HTMLAttribute<CanvasElement>..., @HTMLBuilder content: () -> some Node) -> HTMLElement<CanvasElement, some Node> {
   .init(name: "canvas", attributes: attributes, content: content())
 }
 
@@ -371,17 +371,17 @@ public func noscript(_ attributes: HTMLAttribute<Void>..., @HTMLBuilder content:
   .init(name: "noscript", attributes: attributes, content: content())
 }
 
-public func script(_ attributes: HTMLAttribute<Void>..., @HTMLBuilder content: () -> some Node) -> HTMLElement<Void, some Node> {
+public func script(_ attributes: HTMLAttribute<ScriptElement>..., @HTMLBuilder content: () -> some Node) -> HTMLElement<ScriptElement, some Node> {
   .init(name: "script", attributes: attributes, content: content())
 }
 
 // MARK: - Demarcating Edits
 
-public func del(_ attributes: HTMLAttribute<Void>..., @HTMLBuilder content: () -> some Node) -> HTMLElement<Void, some Node> {
+public func del(_ attributes: HTMLAttribute<ModElement>..., @HTMLBuilder content: () -> some Node) -> HTMLElement<ModElement, some Node> {
   .init(name: "del", attributes: attributes, content: content())
 }
 
-public func ins(_ attributes: HTMLAttribute<Void>..., @HTMLBuilder content: () -> some Node) -> HTMLElement<Void, some Node> {
+public func ins(_ attributes: HTMLAttribute<ModElement>..., @HTMLBuilder content: () -> some Node) -> HTMLElement<ModElement, some Node> {
   .init(name: "ins", attributes: attributes, content: content())
 }
 
@@ -391,11 +391,11 @@ public func caption(_ attributes: HTMLAttribute<Void>..., @HTMLBuilder content: 
   .init(name: "caption", attributes: attributes, content: content())
 }
 
-public func col(_ attributes: HTMLAttribute<Void>...) -> HTMLElement<Void, some Node> {
+public func col(_ attributes: HTMLAttribute<ColElement>...) -> HTMLElement<ColElement, some Node> {
   .init(name: "col", attributes: attributes, content: _EmptyNode())
 }
 
-public func colgroup(_ attributes: HTMLAttribute<Void>..., @HTMLBuilder content: () -> some Node) -> HTMLElement<Void, some Node> {
+public func colgroup(_ attributes: HTMLAttribute<ColElement>..., @HTMLBuilder content: () -> some Node) -> HTMLElement<ColElement, some Node> {
   .init(name: "colgroup", attributes: attributes, content: content())
 }
 
@@ -407,7 +407,7 @@ public func tbody(_ attributes: HTMLAttribute<Void>..., @HTMLBuilder content: ()
   .init(name: "tbody", attributes: attributes, content: content())
 }
 
-public func td(_ attributes: HTMLAttribute<Void>..., @HTMLBuilder content: () -> some Node) -> HTMLElement<Void, some Node> {
+public func td(_ attributes: HTMLAttribute<TableCellElement>..., @HTMLBuilder content: () -> some Node) -> HTMLElement<TableCellElement, some Node> {
   .init(name: "td", attributes: attributes, content: content())
 }
 
@@ -415,7 +415,7 @@ public func tfoot(_ attributes: HTMLAttribute<Void>..., @HTMLBuilder content: ()
   .init(name: "tfoot", attributes: attributes, content: content())
 }
 
-public func th(_ attributes: HTMLAttribute<Void>..., @HTMLBuilder content: () -> some Node) -> HTMLElement<Void, some Node> {
+public func th(_ attributes: HTMLAttribute<TableCellElement>..., @HTMLBuilder content: () -> some Node) -> HTMLElement<TableCellElement, some Node> {
   .init(name: "th", attributes: attributes, content: content())
 }
 
@@ -429,7 +429,7 @@ public func tr(_ attributes: HTMLAttribute<Void>..., @HTMLBuilder content: () ->
 
 // MARK: - Forms
 
-public func button(_ attributes: HTMLAttribute<Void>..., @HTMLBuilder content: () -> some Node) -> HTMLElement<Void, some Node> {
+public func button(_ attributes: HTMLAttribute<ButtonElement>..., @HTMLBuilder content: () -> some Node) -> HTMLElement<ButtonElement, some Node> {
   .init(name: "button", attributes: attributes, content: content())
 }
 
@@ -437,19 +437,19 @@ public func datalist(_ attributes: HTMLAttribute<Void>..., @HTMLBuilder content:
   .init(name: "datalist", attributes: attributes, content: content())
 }
 
-public func fieldset(_ attributes: HTMLAttribute<Void>..., @HTMLBuilder content: () -> some Node) -> HTMLElement<Void, some Node> {
+public func fieldset(_ attributes: HTMLAttribute<FieldsetElement>..., @HTMLBuilder content: () -> some Node) -> HTMLElement<FieldsetElement, some Node> {
   .init(name: "fieldset", attributes: attributes, content: content())
 }
 
-public func form(_ attributes: HTMLAttribute<Void>..., @HTMLBuilder content: () -> some Node) -> HTMLElement<Void, some Node> {
+public func form(_ attributes: HTMLAttribute<FormElement>..., @HTMLBuilder content: () -> some Node) -> HTMLElement<FormElement, some Node> {
   .init(name: "form", attributes: attributes, content: content())
 }
 
-public func input(_ attributes: HTMLAttribute<Void>...) -> HTMLElement<Void, some Node> {
+public func input(_ attributes: HTMLAttribute<InputElement>...) -> HTMLElement<InputElement, some Node> {
   .init(name: "input", attributes: attributes, content: _EmptyNode())
 }
 
-public func label(_ attributes: HTMLAttribute<Void>..., @HTMLBuilder content: () -> some Node) -> HTMLElement<Void, some Node> {
+public func label(_ attributes: HTMLAttribute<LabelElement>..., @HTMLBuilder content: () -> some Node) -> HTMLElement<LabelElement, some Node> {
   .init(name: "label", attributes: attributes, content: content())
 }
 
@@ -457,41 +457,41 @@ public func legend(_ attributes: HTMLAttribute<Void>..., @HTMLBuilder content: (
   .init(name: "legend", attributes: attributes, content: content())
 }
 
-public func meter(_ attributes: HTMLAttribute<Void>..., @HTMLBuilder content: () -> some Node) -> HTMLElement<Void, some Node> {
+public func meter(_ attributes: HTMLAttribute<MeterElement>..., @HTMLBuilder content: () -> some Node) -> HTMLElement<MeterElement, some Node> {
   .init(name: "meter", attributes: attributes, content: content())
 }
 
-public func optgroup(_ attributes: HTMLAttribute<Void>..., @HTMLBuilder content: () -> some Node) -> HTMLElement<Void, some Node> {
+public func optgroup(_ attributes: HTMLAttribute<OptgroupElement>..., @HTMLBuilder content: () -> some Node) -> HTMLElement<OptgroupElement, some Node> {
   .init(name: "optgroup", attributes: attributes, content: content())
 }
 
-public func option(_ attributes: HTMLAttribute<Void>..., @HTMLBuilder content: () -> some Node) -> HTMLElement<Void, some Node> {
+public func option(_ attributes: HTMLAttribute<OptionElement>..., @HTMLBuilder content: () -> some Node) -> HTMLElement<OptionElement, some Node> {
   .init(name: "option", attributes: attributes, content: content())
 }
 
-public func output(_ attributes: HTMLAttribute<Void>..., @HTMLBuilder content: () -> some Node) -> HTMLElement<Void, some Node> {
+public func output(_ attributes: HTMLAttribute<OutputElement>..., @HTMLBuilder content: () -> some Node) -> HTMLElement<OutputElement, some Node> {
   .init(name: "output", attributes: attributes, content: content())
 }
 
-public func progress(_ attributes: HTMLAttribute<Void>..., @HTMLBuilder content: () -> some Node) -> HTMLElement<Void, some Node> {
+public func progress(_ attributes: HTMLAttribute<MeterElement>..., @HTMLBuilder content: () -> some Node) -> HTMLElement<MeterElement, some Node> {
   .init(name: "progress", attributes: attributes, content: content())
 }
 
-public func select(_ attributes: HTMLAttribute<Void>..., @HTMLBuilder content: () -> some Node) -> HTMLElement<Void, some Node> {
+public func select(_ attributes: HTMLAttribute<SelectElement>..., @HTMLBuilder content: () -> some Node) -> HTMLElement<SelectElement, some Node> {
   .init(name: "select", attributes: attributes, content: content())
 }
 
-public func textarea(_ attributes: HTMLAttribute<Void>..., @HTMLBuilder content: () -> some Node) -> HTMLElement<Void, some Node> {
+public func textarea(_ attributes: HTMLAttribute<TextareaElement>..., @HTMLBuilder content: () -> some Node) -> HTMLElement<TextareaElement, some Node> {
   .init(name: "textarea", attributes: attributes, content: content())
 }
 
 // MARK: - Interactive Elements
 
-public func details(_ attributes: HTMLAttribute<Void>..., @HTMLBuilder content: () -> some Node) -> HTMLElement<Void, some Node> {
+public func details(_ attributes: HTMLAttribute<DetailsElement>..., @HTMLBuilder content: () -> some Node) -> HTMLElement<DetailsElement, some Node> {
   .init(name: "details", attributes: attributes, content: content())
 }
 
-public func dialog(_ attributes: HTMLAttribute<Void>..., @HTMLBuilder content: () -> some Node) -> HTMLElement<Void, some Node> {
+public func dialog(_ attributes: HTMLAttribute<DialogElement>..., @HTMLBuilder content: () -> some Node) -> HTMLElement<DialogElement, some Node> {
   .init(name: "dialog", attributes: attributes, content: content())
 }
 
