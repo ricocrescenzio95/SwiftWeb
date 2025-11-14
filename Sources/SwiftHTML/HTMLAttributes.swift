@@ -151,6 +151,17 @@ public enum Sandbox: String {
   case allowTopNavigationByUserActivation = "allow-top-navigation-by-user-activation"
 }
 
+public enum RelValue: String {
+  case alternate, author, bookmark, canonical, dnsPrefetch = "dns-prefetch"
+  case `external` = "external", help, icon, license, manifest, me, modulepreload
+  case next, nofollow, noopener, noreferrer, opener, pingback, preconnect
+  case prefetch, preload, prerender, prev, search, stylesheet, tag
+}
+
+public enum InputModeValue: String {
+  case none, text, decimal, numeric, tel, search, email, url
+}
+
 // MARK: - HTMLAttribute
 
 public struct HTMLAttribute<AttributeType> {
@@ -222,7 +233,9 @@ public extension HTMLAttribute {
   static func target(_ v: Target) -> Self { .init(key: "target", value: v.rawValue) }
   static func target(_ v: String) -> Self { .init(key: "target", value: v) }
   static func download(_ filename: String? = nil) -> Self { .init(key: "download", value: filename ?? "") }
+  static func rel(_ v: RelValue) -> Self { .init(key: "rel", value: v.rawValue) }
   static func rel(_ v: String) -> Self { .init(key: "rel", value: v) }
+  static func rel(_ values: [RelValue]) -> Self { .init(key: "rel", value: values.map(\.rawValue).joined(separator: " ")) }
   
   // Media attributes
   static func src(_ v: String) -> Self { .init(key: "src", value: v) }
@@ -235,10 +248,13 @@ public extension HTMLAttribute {
   static func httpEquiv(_ v: String) -> Self { .init(key: "http-equiv", value: v) }
   
   // Dimensions
-  static func width(_ v: Int) -> Self { .init(key: "width", value: String(v)) }
-  static func height(_ v: Int) -> Self { .init(key: "height", value: String(v)) }
+  static func width(_ v: some Numeric) -> Self { .init(key: "width", value: "\(v)") }
+  static func width(_ v: String) -> Self { .init(key: "width", value: v) }
+  static func height(_ v: some Numeric) -> Self { .init(key: "height", value: "\(v)") }
+  static func height(_ v: String) -> Self { .init(key: "height", value: v) }
   
   // Text content
+  static func value(_ v: some Numeric) -> Self { .init(key: "value", value: "\(v)") }
   static func value(_ v: String) -> Self { .init(key: "value", value: v) }
   static func placeholder(_ v: String) -> Self { .init(key: "placeholder", value: v) }
   
@@ -256,17 +272,22 @@ public extension HTMLAttribute {
   static var selected: Self { .selected(true) }
   static func `for`(_ v: String) -> Self { .init(key: "for", value: v) }
   static func label(_ v: String) -> Self { .init(key: "label", value: v) }
-  static func span(_ v: Int) -> Self { .init(key: "span", value: String(v)) }
+  static func span(_ v: some BinaryInteger) -> Self { .init(key: "span", value: "\(v)") }
   
   // Additional common attributes
   static func accept(_ v: String) -> Self { .init(key: "accept", value: v) }
   static func autocomplete(_ v: String) -> Self { .init(key: "autocomplete", value: v) }
-  static func cols(_ v: Int) -> Self { .init(key: "cols", value: String(v)) }
-  static func rows(_ v: Int) -> Self { .init(key: "rows", value: String(v)) }
+  static func cols(_ v: some BinaryInteger) -> Self { .init(key: "cols", value: "\(v)") }
+  static func rows(_ v: some BinaryInteger) -> Self { .init(key: "rows", value: "\(v)") }
+  static func max(_ v: some Numeric) -> Self { .init(key: "max", value: "\(v)") }
   static func max(_ v: String) -> Self { .init(key: "max", value: v) }
+  static func min(_ v: some Numeric) -> Self { .init(key: "min", value: "\(v)") }
   static func min(_ v: String) -> Self { .init(key: "min", value: v) }
+  static func high(_ v: some Numeric) -> Self { .init(key: "high", value: "\(v)") }
   static func high(_ v: String) -> Self { .init(key: "high", value: v) }
+  static func low(_ v: some Numeric) -> Self { .init(key: "low", value: "\(v)") }
   static func low(_ v: String) -> Self { .init(key: "low", value: v) }
+  static func optimum(_ v: some Numeric) -> Self { .init(key: "optimum", value: "\(v)") }
   static func optimum(_ v: String) -> Self { .init(key: "optimum", value: v) }
   static func wrap(_ v: Wrap) -> Self { .init(key: "wrap", value: v.rawValue) }
   static func coords(_ v: String) -> Self { .init(key: "coords", value: v) }
@@ -295,10 +316,12 @@ public extension HTMLAttribute where AttributeType == InputElement {
   static var formnovalidate: Self { .formnovalidate(true) }
   static func formtarget(_ v: Target) -> Self { .init(key: "formtarget", value: v.rawValue) }
   static func list(_ v: String) -> Self { .init(key: "list", value: v) }
+  static func max(_ v: some Numeric) -> Self { .init(key: "max", value: "\(v)") }
   static func max(_ v: String) -> Self { .init(key: "max", value: v) }
-  static func maxlength(_ v: Int) -> Self { .init(key: "maxlength", value: String(v)) }
+  static func maxlength(_ v: some BinaryInteger) -> Self { .init(key: "maxlength", value: "\(v)") }
+  static func min(_ v: some Numeric) -> Self { .init(key: "min", value: "\(v)") }
   static func min(_ v: String) -> Self { .init(key: "min", value: v) }
-  static func minlength(_ v: Int) -> Self { .init(key: "minlength", value: String(v)) }
+  static func minlength(_ v: some BinaryInteger) -> Self { .init(key: "minlength", value: "\(v)") }
   static func multiple(_ on: Bool) -> Self { .init(key: "multiple", value: on ? "" : nil) }
   static var multiple: Self { .multiple(true) }
   static func pattern(_ v: String) -> Self { .init(key: "pattern", value: v) }
@@ -306,7 +329,8 @@ public extension HTMLAttribute where AttributeType == InputElement {
   static var readonly: Self { .readonly(true) }
   static func required(_ on: Bool) -> Self { .init(key: "required", value: on ? "" : nil) }
   static var required: Self { .required(true) }
-  static func size(_ v: Int) -> Self { .init(key: "size", value: String(v)) }
+  static func size(_ v: some Numeric) -> Self { .init(key: "size", value: "\(v)") }
+  static func step(_ v: some Numeric) -> Self { .init(key: "step", value: "\(v)") }
   static func step(_ v: String) -> Self { .init(key: "step", value: v) }
 }
 
@@ -351,25 +375,25 @@ public extension HTMLAttribute where AttributeType == SelectElement {
   static var multiple: Self { .multiple(true) }
   static func required(_ on: Bool) -> Self { .init(key: "required", value: on ? "" : nil) }
   static var required: Self { .required(true) }
-  static func size(_ v: Int) -> Self { .init(key: "size", value: String(v)) }
+  static func size(_ v: some BinaryInteger) -> Self { .init(key: "size", value: "\(v)") }
 }
 
 // MARK: - Textarea Element Attributes
 
 public extension HTMLAttribute where AttributeType == TextareaElement {
   static func autocomplete(_ v: Autocomplete) -> Self { .init(key: "autocomplete", value: v.rawValue) }
-  static func cols(_ v: Int) -> Self { .init(key: "cols", value: String(v)) }
+  static func cols(_ v: some BinaryInteger) -> Self { .init(key: "cols", value: "\(v)") }
   static func dirname(_ v: String) -> Self { .init(key: "dirname", value: v) }
   static func disabled(_ on: Bool) -> Self { .init(key: "disabled", value: on ? "" : nil) }
   static var disabled: Self { .disabled(true) }
   static func form(_ v: String) -> Self { .init(key: "form", value: v) }
-  static func maxlength(_ v: Int) -> Self { .init(key: "maxlength", value: String(v)) }
-  static func minlength(_ v: Int) -> Self { .init(key: "minlength", value: String(v)) }
+  static func maxlength(_ v: some BinaryInteger) -> Self { .init(key: "maxlength", value: "\(v)") }
+  static func minlength(_ v: some BinaryInteger) -> Self { .init(key: "minlength", value: "\(v)") }
   static func readonly(_ on: Bool) -> Self { .init(key: "readonly", value: on ? "" : nil) }
   static var readonly: Self { .readonly(true) }
   static func required(_ on: Bool) -> Self { .init(key: "required", value: on ? "" : nil) }
   static var required: Self { .required(true) }
-  static func rows(_ v: Int) -> Self { .init(key: "rows", value: String(v)) }
+  static func rows(_ v: some BinaryInteger) -> Self { .init(key: "rows", value: "\(v)") }
   static func wrap(_ v: Wrap) -> Self { .init(key: "wrap", value: v.rawValue) }
 }
 
@@ -440,8 +464,8 @@ public extension HTMLAttribute where AttributeType == MediaElement {
 // MARK: - Table Cell Attributes (td/th)
 
 public extension HTMLAttribute where AttributeType == TableCellElement {
-  static func colspan(_ v: Int) -> Self { .init(key: "colspan", value: String(v)) }
-  static func rowspan(_ v: Int) -> Self { .init(key: "rowspan", value: String(v)) }
+  static func colspan(_ v: some BinaryInteger) -> Self { .init(key: "colspan", value: "\(v)") }
+  static func rowspan(_ v: some BinaryInteger) -> Self { .init(key: "rowspan", value: "\(v)") }
   static func headers(_ ids: [String]) -> Self { .init(key: "headers", value: ids.joined(separator: " ")) }
   static func scope(_ v: Scope) -> Self { .init(key: "scope", value: v.rawValue) }
   static func abbr(_ v: String) -> Self { .init(key: "abbr", value: v) }
@@ -452,24 +476,24 @@ public extension HTMLAttribute where AttributeType == TableCellElement {
 public extension HTMLAttribute where AttributeType == OrderedListElement {
   static func reversed(_ on: Bool) -> Self { .init(key: "reversed", value: on ? "" : nil) }
   static var reversed: Self { .reversed(true) }
-  static func start(_ v: Int) -> Self { .init(key: "start", value: String(v)) }
+  static func start(_ v: some BinaryInteger) -> Self { .init(key: "start", value: "\(v)") }
   static func type(_ v: String) -> Self { .init(key: "type", value: v) }
 }
 
 // MARK: - List Item Attributes
 
 public extension HTMLAttribute where AttributeType == ListItemElement {
-  static func value(_ v: Int) -> Self { .init(key: "value", value: String(v)) }
+  static func value(_ v: some BinaryInteger) -> Self { .init(key: "value", value: "\(v)") }
 }
 
 // MARK: - Meter Element Attributes
 
 public extension HTMLAttribute where AttributeType == MeterElement {
-  static func min(_ v: Double) -> Self { .init(key: "min", value: String(v)) }
-  static func max(_ v: Double) -> Self { .init(key: "max", value: String(v)) }
-  static func low(_ v: Double) -> Self { .init(key: "low", value: String(v)) }
-  static func high(_ v: Double) -> Self { .init(key: "high", value: String(v)) }
-  static func optimum(_ v: Double) -> Self { .init(key: "optimum", value: String(v)) }
+  static func min(_ v: some Numeric) -> Self { .init(key: "min", value: "\(v)") }
+  static func max(_ v: some Numeric) -> Self { .init(key: "max", value: "\(v)") }
+  static func low(_ v: some Numeric) -> Self { .init(key: "low", value: "\(v)") }
+  static func high(_ v: some Numeric) -> Self { .init(key: "high", value: "\(v)") }
+  static func optimum(_ v: some Numeric) -> Self { .init(key: "optimum", value: "\(v)") }
 }
 
 // MARK: - Script Element Attributes
@@ -501,6 +525,7 @@ public extension HTMLAttribute where AttributeType == IframeElement {
   static func loading(_ v: Loading) -> Self { .init(key: "loading", value: v.rawValue) }
   static func referrerpolicy(_ v: ReferrerPolicy) -> Self { .init(key: "referrerpolicy", value: v.rawValue) }
   static func sandbox(_ values: [Sandbox]) -> Self { .init(key: "sandbox", value: values.map(\.rawValue).joined(separator: " ")) }
+  static var sandbox: Self { .init(key: "sandbox", value: "") }
   static func srcdoc(_ v: String) -> Self { .init(key: "srcdoc", value: v) }
 }
 

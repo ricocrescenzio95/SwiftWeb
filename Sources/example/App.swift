@@ -6,6 +6,7 @@ import JavaScriptKit
 struct TestApp: App {
   @State var isVisible: Bool = false
   @State var items: [Int] = (1...5).map(\.self)
+  @State var text: String = "hello"
   
   var content: some Node {
     head {
@@ -43,11 +44,11 @@ struct TestApp: App {
       
       div(.class("box")) {
         h2 { "Static Content" }
-        p { "Se vedi questo, il rendering base funziona! ✅" }
+        p { "If you see this, basic rendering works! ✅" }
       }
       
       div(.class("bg-blue-500 text-white p-4 rounded-lg")) {
-        h1(.class("text-2xl font-bold")) { "Titolo" }
+        h1(.class("text-2xl font-bold")) { "Title" }
         p(.class("mt-2")) { "Content with Tailwind!" }
       }
       
@@ -56,21 +57,21 @@ struct TestApp: App {
         CounterView()
         button { "Test Click" }
           .onClick {
-            print("🎉 Event handler funziona!")
-            // Mostra alert
-            _ = JSObject.global.alert!("Event handler funziona!")
+            print("🎉 Event handler works!")
+            // Show alert
+            _ = JSObject.global.alert!("Event handler works!")
           }
-        button { isVisible ? "Nascondi" : "Mostra" }
+        button { isVisible ? "Hide" : "Show" }
           .onClick {
             isVisible.toggle()
           }
-        button { "Rimuovi" }
+        button { "Remove" }
           .onClick {
             if !items.isEmpty {
               items.removeFirst()
             }
           }
-        button { "Aggiungi" }
+        button { "Add" }
           .onClick {
             if items.isEmpty {
               items.append(1)
@@ -91,16 +92,16 @@ struct TestApp: App {
       
       if isVisible {
         div(.class("box")) {
-          p { "VISIBILE" }
+          p { "VISIBLE" }
         }
       }
       
-      a(.href("www.google.com"), .target(._blank)) {
+      a(.href("https://www.google.com"), .target(._blank)) {
         "Open google"
       }
       
       div(.class("box")) {
-        h2 { "Lista con Key (\(items.count) items)" }
+        h2 { "List with Keys (\(items.count) items)" }
         ul {
           ForEach(items, id: \.self) { item in
             li { "Item #\(item)" }

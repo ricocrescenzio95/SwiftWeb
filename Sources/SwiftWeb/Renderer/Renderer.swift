@@ -593,7 +593,7 @@ extension App {
   public static func start() {
     if renderer == nil {
       initRenderer()
+      renderer?.start(app: Self())
     }
-    renderer?.start(app: Self())
   }
 }
