@@ -266,4 +266,4 @@ extension Fiber: CustomStringConvertible {
   }
 }
 
-typealias EventHandler = (sending JSValue) -> Void
+typealias EventHandler = (JSValue) -> Void

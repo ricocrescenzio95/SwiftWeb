@@ -34,9 +34,12 @@ public final class Renderer {
 
   /// The reconciler (handles the render phase)
   private(set) var reconciler = Reconciler()
+  
+  /// The event handler
+  private(set) lazy var domEvents = DOMEvents()
 
   /// The commit phase handler
-  private let commitPhase = CommitPhase()
+  private(set) lazy var commitPhase = CommitPhase(domEvents: domEvents)
 
   /// Current work-in-progress fiber (during work loop)
   private var workInProgress: Fiber?

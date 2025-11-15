@@ -40,7 +40,14 @@ struct TestApp: App {
     }
     body {
       h1(.class("text-4xl")) { "🧪 V2 Renderer Test" }
-      input()
+      input(.value(text))
+        .onInput { event in
+          text = event.target.value ?? ""
+        }
+      button { "Fill input" }
+        .onClick {
+          text = "Filled!"
+        }
       
       div(.class("box")) {
         h2 { "Static Content" }
@@ -71,14 +78,16 @@ struct TestApp: App {
               items.removeFirst()
             }
           }
-        button { "Add" }
-          .onClick {
-            if items.isEmpty {
-              items.append(1)
-            } else {
-              items.insert(items.max()! + 1, at: 0)
+        if isVisible {
+          button { "Add" }
+            .onClick {
+              if items.isEmpty {
+                items.append(1)
+              } else {
+                items.insert(items.max()! + 1, at: 0)
+              }
             }
-          }
+        }
         button(
           .style(isVisible ? [
             .backgroundColor(.aqua),

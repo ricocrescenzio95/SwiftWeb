@@ -4,7 +4,8 @@ import JavaScriptKit
 // MARK: - Type-Safe Event Wrappers
 
 /// Base protocol for all DOM events
-public protocol DOMEvent {
+public protocol DOMEvent<TargetElement> {
+  associatedtype TargetElement: EventElement
   init(jsValue: JSValue)
 }
 
@@ -442,7 +443,7 @@ public struct GenericEvent<TargetElement: EventElement>: DOMEvent, CustomStringC
 
 public struct HTMLEvent {
   public let key: String
-  public let handler: (sending JSValue) -> Void
+  public let handler: (JSValue) -> Void
 }
 
 public struct EventNode<AttributesType, Content: Node>: Node {

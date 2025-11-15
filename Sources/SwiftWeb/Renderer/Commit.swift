@@ -8,6 +8,12 @@ import Foundation
 /// This phase is SYNCHRONOUS and CANNOT be interrupted
 /// It must be fast because it blocks the main thread
 final class CommitPhase {
+  
+  let domEvents: DOMEvents
+  
+  init(domEvents: DOMEvents) {
+    self.domEvents = domEvents
+  }
 
   // MARK: - Main Entry Point
 
@@ -137,15 +143,9 @@ final class CommitPhase {
     } else {
       // Update attributes
       let oldProps = fiber.alternate?.memoizedProps ?? [:]
-      let newProps = fiber.memoizedProps
+      let newProps = fiber.pendingProps  // ✅ Use pendingProps, not memoizedProps!
 
       updateAttributes(node: domNode, oldProps: oldProps, newProps: newProps)
-
-      // Update event listeners
-      let oldEvents = fiber.alternate?.events ?? [:]
-      let newEvents = fiber.events
-
-      updateEventListeners(node: domNode, fiber: fiber, oldEvents: oldEvents, newEvents: newEvents)
     }
   }
 
@@ -165,6 +165,7 @@ final class CommitPhase {
 
     // Remove the DOM node
     if let domNode = fiber.stateNode {
+      domEvents.removeEventHandlers(for: domNode)
       _ = domNode.remove?()
     }
 
@@ -241,56 +242,8 @@ final class CommitPhase {
   private func attachEventListeners(_ fiber: Fiber) {
     guard let node = fiber.stateNode else { return }
 
-    for (eventType, handler) in fiber.events {
-      let closure = JSClosure { args in
-        guard !args.isEmpty else { return .undefined }
-        handler(args[0])
-        return .undefined
-      }
-
-      let closureKey = "_swiftClosure_\(eventType)"
-      node[closureKey] = .object(closure)
-      _ = node.addEventListener?(eventType, closure)
-    }
-  }
-
-  /// Update event listeners on a DOM node
-  private func updateEventListeners(
-    node: JSObject,
-    fiber: Fiber,
-    oldEvents: [String: EventHandler],
-    newEvents: [String: EventHandler]
-  ) {
-    // Remove old listeners
-    for (eventType, _) in oldEvents where newEvents[eventType] == nil {
-      removeEventListener(node: node, eventType: eventType)
-    }
-
-    // Add/update listeners
-    for (eventType, handler) in newEvents {
-      if oldEvents[eventType] != nil {
-        removeEventListener(node: node, eventType: eventType)
-      }
-
-      let closure = JSClosure { args in
-        guard !args.isEmpty else { return .undefined }
-        handler(args[0])
-        return .undefined
-      }
-
-      let closureKey = "_swiftClosure_\(eventType)"
-      node[closureKey] = .object(closure)
-      _ = node.addEventListener?(eventType, closure)
-    }
-  }
-
-  /// Remove an event listener from a DOM node
-  private func removeEventListener(node: JSObject, eventType: String) {
-    let closureKey = "_swiftClosure_\(eventType)"
-
-    if let closureValue = node[closureKey].object {
-      _ = node.removeEventListener?(eventType, closureValue)
-      node[closureKey] = .undefined
+    for (eventName, handler) in fiber.events {
+      domEvents.setEventHandlers(name: eventName, element: node, handlers: [handler])
     }
   }
 
