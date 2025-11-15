@@ -225,10 +225,32 @@ final class Reconciler {
 
   /// Check if props changed
   private func propsChanged(current: Fiber, new: Fiber) -> Bool {
+    // Different number of props = changed
     guard current.memoizedProps.count == new.pendingProps.count else {
       return true
     }
-    return new.pendingProps.contains { current.memoizedProps[$0.key] != $0.value }
+    
+    // Check if any new prop is different from memoized
+    for (key, newValue) in new.pendingProps {
+      if let oldValue = current.memoizedProps[key] {
+        // Compare values
+        if oldValue != newValue {
+          return true
+        }
+      } else {
+        // New prop added
+        return true
+      }
+    }
+    
+    // Check if any old prop was removed
+    for (key, _) in current.memoizedProps {
+      if new.pendingProps[key] == nil {
+        return true
+      }
+    }
+    
+    return false
   }
 
   /// Check if text content changed
