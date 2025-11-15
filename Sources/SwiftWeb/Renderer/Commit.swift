@@ -9,11 +9,7 @@ import Foundation
 /// It must be fast because it blocks the main thread
 final class CommitPhase {
   
-  let domEvents: DOMEvents
-  
-  init(domEvents: DOMEvents) {
-    self.domEvents = domEvents
-  }
+  let globalEventHandler = GlobalEventHandler()
 
   // MARK: - Main Entry Point
 
@@ -165,7 +161,7 @@ final class CommitPhase {
 
     // Remove the DOM node
     if let domNode = fiber.stateNode {
-      domEvents.removeEventHandlers(for: domNode)
+      globalEventHandler.removeEventHandlers(for: domNode)
       _ = domNode.remove?()
     }
 
@@ -243,7 +239,7 @@ final class CommitPhase {
     guard let node = fiber.stateNode else { return }
 
     for (eventName, handler) in fiber.events {
-      domEvents.setEventHandlers(name: eventName, element: node, handlers: [handler])
+      globalEventHandler.setEventHandlers(name: eventName, element: node, handlers: [handler])
     }
   }
 

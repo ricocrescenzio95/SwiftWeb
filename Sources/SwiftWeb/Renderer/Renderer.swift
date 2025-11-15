@@ -33,13 +33,10 @@ public final class Renderer {
   private var root: FiberRoot
 
   /// The reconciler (handles the render phase)
-  private(set) var reconciler = Reconciler()
-  
-  /// The event handler
-  private(set) lazy var domEvents = DOMEvents()
+  private let reconciler = Reconciler()
 
   /// The commit phase handler
-  private(set) lazy var commitPhase = CommitPhase(domEvents: domEvents)
+  private let commitPhase = CommitPhase()
 
   /// Current work-in-progress fiber (during work loop)
   private var workInProgress: Fiber?

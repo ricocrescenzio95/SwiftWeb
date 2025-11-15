@@ -60,7 +60,7 @@ struct FiberConverter {
 
   // MARK: - Event Nodes
 
-  func convert<AttributesType, Content: Node>(
+  func convert<AttributesType, Content>(
     _ element: EventNode<AttributesType, Content>,
     lane: Lane
   ) -> Fiber? {

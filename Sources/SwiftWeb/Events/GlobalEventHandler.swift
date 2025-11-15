@@ -57,7 +57,7 @@ let supportedEvents = [
   "toggle"
 ]
 
-class DOMEvents {
+class GlobalEventHandler {
   var eventHandlers: [JSObject: [EventName: [EventHandler]]] = [:]
   
   init() {
@@ -72,7 +72,6 @@ class DOMEvents {
   }
   
   func removeEventHandlers(for element: JSObject) {
-    let before = eventHandlers[element]
     eventHandlers[element] = nil
   }
   
@@ -89,11 +88,13 @@ class DOMEvents {
   
   // MARK: - Event Delegation Setup
   func setupEventDelegation() {
+    #if arch(wasm32)
     for eventName in supportedEvents {
       _ = JSObject.global.document.addEventListener(eventName, JSClosure { [weak self] args in
         self?.dispatchEvent(args[0])
         return .undefined
       })
     }
+    #endif
   }
 }

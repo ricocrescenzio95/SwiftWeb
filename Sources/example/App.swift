@@ -38,25 +38,16 @@ struct TestApp: App {
         )
       }
     }
-    body {
+    body(.class("flex flex-col gap-4")) {
       h1(.class("text-4xl")) { "🧪 V2 Renderer Test" }
-      input(.value(text))
+      input(.value(text), .class("border p-2 rounded"))
         .onInput { event in
           text = event.target.value ?? ""
         }
-      button { "Fill input" }
-        .onClick {
-          text = "Filled!"
-        }
-      
+
       div(.class("box")) {
         h2 { "Static Content" }
         p { "If you see this, basic rendering works! ✅" }
-      }
-      
-      div(.class("bg-blue-500 text-white p-4 rounded-lg")) {
-        h1(.class("text-2xl font-bold")) { "Title" }
-        p(.class("mt-2")) { "Content with Tailwind!" }
       }
       
       div(.class("box")) {
@@ -130,12 +121,12 @@ struct CounterView {
     
     button { "-" }
       .onClick {
-        self.count -= 1
+        count -= 1
       }
     "Count: \(count)"
     button { "+" }
       .onClick {
-        self.count += 1
+        count += 1
       }
     
   }
