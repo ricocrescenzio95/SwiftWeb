@@ -238,8 +238,8 @@ final class CommitPhase {
   private func attachEventListeners(_ fiber: Fiber) {
     guard let node = fiber.stateNode else { return }
 
-    for (eventName, handler) in fiber.events {
-      globalEventHandler.setEventHandlers(name: eventName, element: node, handlers: [handler])
+    for (eventName, handlers) in fiber.events {
+      globalEventHandler.setEventHandlers(name: eventName, element: node, handlers: handlers)
     }
   }
 
