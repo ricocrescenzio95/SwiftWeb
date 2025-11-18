@@ -4,7 +4,7 @@ import JavaScriptKit
 // MARK: - Base Event Protocol
 
 public protocol DOMEvent<Target> {
-  associatedtype Target: EventElement
+  associatedtype Target: NativeElement
 
   var nativeEvent: JSValue { get }
   
@@ -22,8 +22,8 @@ public protocol DOMEvent<Target> {
 }
 
 extension DOMEvent {
-  public var target: Target.Element { Target.makeEventElement(from: nativeEvent.target) }
-  public var currentTarget: Target.Element { Target.makeEventElement(from: nativeEvent.currentTarget) }
+  public var target: Target.Element { Target.makeNativeElement(from: nativeEvent.target) }
+  public var currentTarget: Target.Element { Target.makeNativeElement(from: nativeEvent.currentTarget) }
   public var bubbles: Bool { nativeEvent.bubbles.boolean ?? false }
   public var cancelable: Bool { nativeEvent.cancelable.boolean ?? false }
   public var defaultPrevented: Bool { nativeEvent.defaultPrevented.boolean ?? false }
@@ -38,7 +38,7 @@ extension DOMEvent {
 // MARK: - Event Wrappers (Semplificati)
 
 /// Generic event - usato per la maggior parte degli eventi
-public struct GenericEvent<Target: EventElement>: DOMEvent {
+public struct GenericEvent<Target: NativeElement>: DOMEvent {
   public let nativeEvent: JSValue
   
   init(_ nativeEvent: JSValue) {
@@ -47,7 +47,7 @@ public struct GenericEvent<Target: EventElement>: DOMEvent {
 }
 
 /// Pointer/Mouse event - per eventi con coordinate e pulsanti
-public struct PointerEvent<Target: EventElement>: DOMEvent {
+public struct PointerEvent<Target: NativeElement>: DOMEvent {
   public let nativeEvent: JSValue
   
   init(_ nativeEvent: JSValue) {
@@ -79,7 +79,7 @@ public struct PointerEvent<Target: EventElement>: DOMEvent {
 }
 
 /// Keyboard event
-public struct KeyboardEvent<Target: EventElement>: DOMEvent {
+public struct KeyboardEvent<Target: NativeElement>: DOMEvent {
   public let nativeEvent: JSValue
   
   init(_ nativeEvent: JSValue) {
@@ -100,7 +100,7 @@ public struct KeyboardEvent<Target: EventElement>: DOMEvent {
 }
 
 /// Input event (per form inputs)
-public struct InputEvent<Target: EventElement>: DOMEvent {
+public struct InputEvent<Target: NativeElement>: DOMEvent {
   public let nativeEvent: JSValue
   
   init(_ nativeEvent: JSValue) {
@@ -124,7 +124,7 @@ public struct EventNode<AttributesType, Content: Node>: Node {
   public var content: Content
 }
 
-public extension HTMLElement where AttributesType: EventElement {
+public extension HTMLElement where AttributesType: NativeElement {
   
   // MARK: - Pointer Events
   
@@ -233,7 +233,7 @@ public extension HTMLElement where AttributesType: EventElement {
 
 // TODO: FIND A BETTER WAY TO AVOID DUPLICATING FUNCTIONS
 
-public extension EventNode where AttributesType: EventElement {
+public extension EventNode where AttributesType: NativeElement {
   
   // MARK: - Pointer Events
   
