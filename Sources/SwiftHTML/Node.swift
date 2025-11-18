@@ -9,6 +9,7 @@ public protocol Node<Content> {
 
 public struct EmptyNode: Node {
   public var content: some Node { "" }
+  public init() {}
 }
 
 public enum EitherNode<First: Node, Second: Node>: Node {
