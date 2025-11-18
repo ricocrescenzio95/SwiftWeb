@@ -231,7 +231,6 @@ public extension HTMLElement where AttributesType: EventElement {
   }
 }
 
-
 // TODO: FIND A BETTER WAY TO AVOID DUPLICATING FUNCTIONS
 
 public extension EventNode where AttributesType: EventElement {

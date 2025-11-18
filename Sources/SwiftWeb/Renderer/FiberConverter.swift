@@ -70,7 +70,11 @@ struct FiberConverter {
 
     // Attach events to the fiber
     for event in element.events {
-      fiber.events[event.key] = event.handler
+      if fiber.events[event.key, default: []].isEmpty {
+        fiber.events[event.key] = [event.handler]
+      } else {
+        fiber.events[event.key]?.append(event.handler)
+      }
     }
 
     return fiber

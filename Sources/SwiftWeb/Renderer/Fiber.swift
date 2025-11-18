@@ -119,7 +119,7 @@ final class Fiber {
   var deletions: [Fiber]?
 
   /// Event handlers attached to this fiber
-  var events: [String: EventHandler] = [:]
+  var events: [String: [EventHandler]] = [:]
 
   // MARK: - Effect List (Linked List of Effects)
 
