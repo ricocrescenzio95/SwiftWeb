@@ -102,51 +102,48 @@ public final class Renderer {
 
     // Find the component fiber (the fiber passed should be the component itself)
     guard fiber.isComponent else {
-      print("❌ [State Update] Fiber is not a component")
       return
     }
 
     // Get the component from the fiber
     guard let component = fiber.sourceNode as? any ComponentNode else {
-      print("❌ [State Update] Fiber has no component sourceNode")
       return
     }
 
     // Re-bind state to ensure it reads the updated values
     component.__bindStorage(with: fiber)
 
-    // Regenerate the component's content with the NEW state
-    print("🔄 [State Update] Regenerating component content...")
-    let newContent = component.content
-
-    // Convert to fiber tree
-    guard let newTree = reconciler.converter.convert(newContent, lane: .defaultLane) else {
+    let convertDate = Date()
+    guard let newTree = reconciler.converter.convert(component.content, lane: .defaultLane) else {
       print("❌ [State Update] Failed to convert")
       return
     }
+    print("🔄 [State Update] convert", convertDate.distance(to: .now))
 
     // Get the current fiber's old children
     let oldChild = fiber.child
 
     // Reconcile the component's children
-    print("🔄 [State Update] Reconciling component children...")
+    let reconcileDate = Date()
     reconciler.reconcileChildrenForComponent(
       workInProgress: fiber,
       currentChild: oldChild,
       newChild: newTree,
       lane: .defaultLane
     )
+    print("🔄 [State Update] reconcile", reconcileDate.distance(to: .now))
 
     // Update state references in the reconciled subtree
     reconciler.updateStateReferences(in: fiber)
 
     // Commit the changes
-    print("🔄 [State Update] Committing changes...")
+    let commitDate = Date()
     let deletions = reconciler.getDeletions()
     commitPhase.commitRoot(fiber, deletions: deletions)
     reconciler.clearDeletions()
+    print("🔄 [State Update] commit", commitDate.distance(to: .now))
 
-    print("✅ [State Update] Complete")
+    print("✅ [State Update] complete", convertDate.distance(to: .now))
   }
 
   /// Find the nearest component fiber by walking up the tree
@@ -584,16 +581,4 @@ public private(set) var renderer: Renderer?
 /// Initialize the renderer
 public func initRenderer() {
   renderer = Renderer()
-}
-
-// MARK: - App Extension
-
-extension App {
-  /// Start the app using Renderer
-  public static func start() {
-    if renderer == nil {
-      initRenderer()
-      renderer?.start(app: Self())
-    }
-  }
 }
