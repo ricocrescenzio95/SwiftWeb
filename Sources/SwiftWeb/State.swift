@@ -81,4 +81,8 @@ public struct Binding<Value> {
   public var projectedValue: Self {
     self
   }
+  
+  public static func constant(_ value: Value) -> Self {
+    .init(get: { value }, set: { _ in })
+  }
 }
