@@ -85,7 +85,7 @@ public extension HTMLAttribute {
   // Core global attributes
   static func accesskey(_ v: String) -> Self { .init(key: "accesskey", value: v) }
   static func autocapitalize(_ v: String) -> Self { .init(key: "autocapitalize", value: v) }
-  static func autofocus(_ on: Bool) -> Self { .init(key: "autofocus", value: on ? "" : nil) }
+  static func autofocus(_ on: Bool) -> Self { .init(key: "autofocus", value: on ? "true" : "false") }
   static var autofocus: Self { .autofocus(true) }
   static func `class`(_ classes: [String]) -> Self { .init(key: "class", value: classes.joined(separator: " ")) }
   static func `class`(_ class: String...) -> Self { .init(key: "class", value: `class`.joined(separator: " ")) }
@@ -93,17 +93,17 @@ public extension HTMLAttribute {
   static func dir(_ v: Dir) -> Self { .init(key: "dir", value: v.rawValue) }
   static func draggable(_ on: Bool) -> Self { .init(key: "draggable", value: on ? "true" : "false") }
   static func enterkeyhint(_ v: EnterKeyHint) -> Self { .init(key: "enterkeyhint", value: v.rawValue) }
-  static func hidden(_ on: Bool) -> Self { .init(key: "hidden", value: on ? "" : nil) }
+  static func hidden(_ on: Bool) -> Self { .init(key: "hidden", value: on ? "true" : "false") }
   static var hidden: Self { .hidden(true) }
   static func id(_ v: String) -> Self { .init(key: "id", value: v) }
-  static func inert(_ on: Bool) -> Self { .init(key: "inert", value: on ? "" : nil) }
+  static func inert(_ on: Bool) -> Self { .init(key: "inert", value: on ? "true" : "false") }
   static var inert: Self { .inert(true) }
   static func inputmode(_ v: InputMode) -> Self { .init(key: "inputmode", value: v.rawValue) }
   static func is_(_ v: String) -> Self { .init(key: "is", value: v) }
   static func lang(_ v: String) -> Self { .init(key: "lang", value: v) }
   static func nonce(_ v: String) -> Self { .init(key: "nonce", value: v) }
   static func part(_ tokens: [String]) -> Self { .init(key: "part", value: tokens.joined(separator: " ")) }
-  static func popover(_ on: Bool) -> Self { .init(key: "popover", value: on ? "" : nil) }
+  static func popover(_ on: Bool) -> Self { .init(key: "popover", value: on ? "true" : "false") }
   static var popover: Self { .popover(true) }
   static func slot(_ v: String) -> Self { .init(key: "slot", value: v) }
   static func spellcheck(_ on: Bool) -> Self { .init(key: "spellcheck", value: on ? "true" : "false") }
@@ -117,7 +117,7 @@ public extension HTMLAttribute {
   static func itemid(_ v: String) -> Self { .init(key: "itemid", value: v) }
   static func itemprop(_ tokens: [String]) -> Self { .init(key: "itemprop", value: tokens.joined(separator: " ")) }
   static func itemref(_ ids: [String]) -> Self { .init(key: "itemref", value: ids.joined(separator: " ")) }
-  static func itemscope(_ on: Bool) -> Self { .init(key: "itemscope", value: on ? "" : nil) }
+  static func itemscope(_ on: Bool) -> Self { .init(key: "itemscope", value: on ? "true" : "false") }
   static var itemscope: Self { .itemscope(true) }
   static func itemtype(_ urls: [String]) -> Self { .init(key: "itemtype", value: urls.joined(separator: " ")) }
   
@@ -170,7 +170,7 @@ public extension HTMLAttribute {
   static func contenteditable(_ on: Bool) -> Self { .init(key: "contenteditable", value: on ? "true" : "false") }
   
   // Attributes for specific elements that can appear on multiple types
-  static func selected(_ on: Bool) -> Self { .init(key: "selected", value: on ? "" : nil) }
+  static func selected(_ on: Bool) -> Self { .init(key: "selected", value: on ? "true" : "false") }
   static var selected: Self { .selected(true) }
   static func `for`(_ v: String) -> Self { .init(key: "for", value: v) }
   static func label(_ v: String) -> Self { .init(key: "label", value: v) }
@@ -205,16 +205,16 @@ public extension HTMLAttribute where AttributeType == InputHTMLAttribute {
   static func autocomplete(_ v: Autocomplete) -> Self { .init(key: "autocomplete", value: v.rawValue) }
   static func autocomplete(_ v: String) -> Self { .init(key: "autocomplete", value: v) }
   static func capture(_ v: String) -> Self { .init(key: "capture", value: v) }
-  static func checked(_ on: Bool) -> Self { .init(key: "checked", value: on ? "" : nil) }
+  static func checked(_ on: Bool) -> Self { .init(key: "checked", value: on ? "true" : "false") }
   static var checked: Self { .checked(true) }
   static func dirname(_ v: String) -> Self { .init(key: "dirname", value: v) }
-  static func disabled(_ on: Bool) -> Self { .init(key: "disabled", value: on ? "" : nil) }
+  static func disabled(_ on: Bool) -> Self { .init(key: "disabled", value: on ? "true" : "false") }
   static var disabled: Self { .disabled(true) }
   static func form(_ v: String) -> Self { .init(key: "form", value: v) }
   static func formaction(_ v: String) -> Self { .init(key: "formaction", value: v) }
   static func formenctype(_ v: FormEnctype) -> Self { .init(key: "formenctype", value: v.rawValue) }
   static func formmethod(_ v: FormMethod) -> Self { .init(key: "formmethod", value: v.rawValue) }
-  static func formnovalidate(_ on: Bool) -> Self { .init(key: "formnovalidate", value: on ? "" : nil) }
+  static func formnovalidate(_ on: Bool) -> Self { .init(key: "formnovalidate", value: on ? "true" : "false") }
   static var formnovalidate: Self { .formnovalidate(true) }
   static func formtarget(_ v: Target) -> Self { .init(key: "formtarget", value: v.rawValue) }
   static func list(_ v: String) -> Self { .init(key: "list", value: v) }
@@ -224,12 +224,12 @@ public extension HTMLAttribute where AttributeType == InputHTMLAttribute {
   static func min(_ v: some Numeric) -> Self { .init(key: "min", value: "\(v)") }
   static func min(_ v: String) -> Self { .init(key: "min", value: v) }
   static func minlength(_ v: some BinaryInteger) -> Self { .init(key: "minlength", value: "\(v)") }
-  static func multiple(_ on: Bool) -> Self { .init(key: "multiple", value: on ? "" : nil) }
+  static func multiple(_ on: Bool) -> Self { .init(key: "multiple", value: on ? "true" : "false") }
   static var multiple: Self { .multiple(true) }
   static func pattern(_ v: String) -> Self { .init(key: "pattern", value: v) }
-  static func readonly(_ on: Bool) -> Self { .init(key: "readonly", value: on ? "" : nil) }
+  static func readonly(_ on: Bool) -> Self { .init(key: "readonly", value: on ? "true" : "false") }
   static var readonly: Self { .readonly(true) }
-  static func required(_ on: Bool) -> Self { .init(key: "required", value: on ? "" : nil) }
+  static func required(_ on: Bool) -> Self { .init(key: "required", value: on ? "true" : "false") }
   static var required: Self { .required(true) }
   static func size(_ v: some Numeric) -> Self { .init(key: "size", value: "\(v)") }
   static func step(_ v: some Numeric) -> Self { .init(key: "step", value: "\(v)") }
@@ -240,13 +240,13 @@ public extension HTMLAttribute where AttributeType == InputHTMLAttribute {
 
 public extension HTMLAttribute where AttributeType == ButtonHTMLAttribute {
   static func type(_ v: ButtonType) -> Self { .init(key: "type", value: v.rawValue) }
-  static func disabled(_ on: Bool) -> Self { .init(key: "disabled", value: on ? "" : nil) }
+  static func disabled(_ on: Bool) -> Self { .init(key: "disabled", value: on ? "true" : "false") }
   static var disabled: Self { .disabled(true) }
   static func form(_ v: String) -> Self { .init(key: "form", value: v) }
   static func formaction(_ v: String) -> Self { .init(key: "formaction", value: v) }
   static func formenctype(_ v: FormEnctype) -> Self { .init(key: "formenctype", value: v.rawValue) }
   static func formmethod(_ v: FormMethod) -> Self { .init(key: "formmethod", value: v.rawValue) }
-  static func formnovalidate(_ on: Bool) -> Self { .init(key: "formnovalidate", value: on ? "" : nil) }
+  static func formnovalidate(_ on: Bool) -> Self { .init(key: "formnovalidate", value: on ? "true" : "false") }
   static var formnovalidate: Self { .formnovalidate(true) }
   static func formtarget(_ v: Target) -> Self { .init(key: "formtarget", value: v.rawValue) }
   static func popovertarget(_ v: String) -> Self { .init(key: "popovertarget", value: v) }
@@ -261,7 +261,7 @@ public extension HTMLAttribute where AttributeType == FormHTMLAttribute {
   static func autocomplete(_ v: Autocomplete) -> Self { .init(key: "autocomplete", value: v.rawValue) }
   static func enctype(_ v: FormEnctype) -> Self { .init(key: "enctype", value: v.rawValue) }
   static func method(_ v: FormMethod) -> Self { .init(key: "method", value: v.rawValue) }
-  static func novalidate(_ on: Bool) -> Self { .init(key: "novalidate", value: on ? "" : nil) }
+  static func novalidate(_ on: Bool) -> Self { .init(key: "novalidate", value: on ? "true" : "false") }
   static var novalidate: Self { .novalidate(true) }
   static func target(_ v: Target) -> Self { .init(key: "target", value: v.rawValue) }
 }
@@ -270,12 +270,12 @@ public extension HTMLAttribute where AttributeType == FormHTMLAttribute {
 
 public extension HTMLAttribute where AttributeType == SelectHTMLAttribute {
   static func autocomplete(_ v: Autocomplete) -> Self { .init(key: "autocomplete", value: v.rawValue) }
-  static func disabled(_ on: Bool) -> Self { .init(key: "disabled", value: on ? "" : nil) }
+  static func disabled(_ on: Bool) -> Self { .init(key: "disabled", value: on ? "true" : "false") }
   static var disabled: Self { .disabled(true) }
   static func form(_ v: String) -> Self { .init(key: "form", value: v) }
-  static func multiple(_ on: Bool) -> Self { .init(key: "multiple", value: on ? "" : nil) }
+  static func multiple(_ on: Bool) -> Self { .init(key: "multiple", value: on ? "true" : "false") }
   static var multiple: Self { .multiple(true) }
-  static func required(_ on: Bool) -> Self { .init(key: "required", value: on ? "" : nil) }
+  static func required(_ on: Bool) -> Self { .init(key: "required", value: on ? "true" : "false") }
   static var required: Self { .required(true) }
   static func size(_ v: some BinaryInteger) -> Self { .init(key: "size", value: "\(v)") }
 }
@@ -286,14 +286,14 @@ public extension HTMLAttribute where AttributeType == TextareaHTMLAttribute {
   static func autocomplete(_ v: Autocomplete) -> Self { .init(key: "autocomplete", value: v.rawValue) }
   static func cols(_ v: some BinaryInteger) -> Self { .init(key: "cols", value: "\(v)") }
   static func dirname(_ v: String) -> Self { .init(key: "dirname", value: v) }
-  static func disabled(_ on: Bool) -> Self { .init(key: "disabled", value: on ? "" : nil) }
+  static func disabled(_ on: Bool) -> Self { .init(key: "disabled", value: on ? "true" : "false") }
   static var disabled: Self { .disabled(true) }
   static func form(_ v: String) -> Self { .init(key: "form", value: v) }
   static func maxlength(_ v: some BinaryInteger) -> Self { .init(key: "maxlength", value: "\(v)") }
   static func minlength(_ v: some BinaryInteger) -> Self { .init(key: "minlength", value: "\(v)") }
-  static func readonly(_ on: Bool) -> Self { .init(key: "readonly", value: on ? "" : nil) }
+  static func readonly(_ on: Bool) -> Self { .init(key: "readonly", value: on ? "true" : "false") }
   static var readonly: Self { .readonly(true) }
-  static func required(_ on: Bool) -> Self { .init(key: "required", value: on ? "" : nil) }
+  static func required(_ on: Bool) -> Self { .init(key: "required", value: on ? "true" : "false") }
   static var required: Self { .required(true) }
   static func rows(_ v: some BinaryInteger) -> Self { .init(key: "rows", value: "\(v)") }
   static func wrap(_ v: Wrap) -> Self { .init(key: "wrap", value: v.rawValue) }
@@ -311,7 +311,7 @@ public extension HTMLAttribute where AttributeType == ImgHTMLAttribute {
   static func crossorigin(_ v: CrossOrigin) -> Self { .init(key: "crossorigin", value: v.rawValue) }
   static func decoding(_ v: Decoding) -> Self { .init(key: "decoding", value: v.rawValue) }
   static func fetchpriority(_ v: FetchPriority) -> Self { .init(key: "fetchpriority", value: v.rawValue) }
-  static func ismap(_ on: Bool) -> Self { .init(key: "ismap", value: on ? "" : nil) }
+  static func ismap(_ on: Bool) -> Self { .init(key: "ismap", value: on ? "true" : "false") }
   static var ismap: Self { .ismap(true) }
   static func loading(_ v: Loading) -> Self { .init(key: "loading", value: v.rawValue) }
   static func referrerpolicy(_ v: ReferrerPolicy) -> Self { .init(key: "referrerpolicy", value: v.rawValue) }
@@ -336,7 +336,7 @@ public extension HTMLAttribute where AttributeType == LinkHTMLAttribute {
   static func sizes(_ v: String) -> Self { .init(key: "sizes", value: v) }
   static func type(_ v: String) -> Self { .init(key: "type", value: v) }
   static func blocking(_ v: String) -> Self { .init(key: "blocking", value: v) }
-  static func disabled(_ on: Bool) -> Self { .init(key: "disabled", value: on ? "" : nil) }
+  static func disabled(_ on: Bool) -> Self { .init(key: "disabled", value: on ? "true" : "false") }
   static var disabled: Self { .disabled(true) }
 }
 
@@ -347,21 +347,21 @@ extension VideoHTMLAttribute: MediaAttribute {}
 extension AudioHTMLAttribute: MediaAttribute {}
 
 public extension HTMLAttribute where AttributeType: MediaAttribute {
-  static func autoplay(_ on: Bool) -> Self { .init(key: "autoplay", value: on ? "" : nil) }
+  static func autoplay(_ on: Bool) -> Self { .init(key: "autoplay", value: on ? "true" : "false") }
   static var autoplay: Self { .autoplay(true) }
-  static func controls(_ on: Bool) -> Self { .init(key: "controls", value: on ? "" : nil) }
+  static func controls(_ on: Bool) -> Self { .init(key: "controls", value: on ? "true" : "false") }
   static var controls: Self { .controls(true) }
   static func controlslist(_ v: String) -> Self { .init(key: "controlslist", value: v) }
   static func crossorigin(_ v: CrossOrigin) -> Self { .init(key: "crossorigin", value: v.rawValue) }
-  static func disablepictureinpicture(_ on: Bool) -> Self { .init(key: "disablepictureinpicture", value: on ? "" : nil) }
+  static func disablepictureinpicture(_ on: Bool) -> Self { .init(key: "disablepictureinpicture", value: on ? "true" : "false") }
   static var disablepictureinpicture: Self { .disablepictureinpicture(true) }
-  static func disableremoteplayback(_ on: Bool) -> Self { .init(key: "disableremoteplayback", value: on ? "" : nil) }
+  static func disableremoteplayback(_ on: Bool) -> Self { .init(key: "disableremoteplayback", value: on ? "true" : "false") }
   static var disableremoteplayback: Self { .disableremoteplayback(true) }
-  static func loop(_ on: Bool) -> Self { .init(key: "loop", value: on ? "" : nil) }
+  static func loop(_ on: Bool) -> Self { .init(key: "loop", value: on ? "true" : "false") }
   static var loop: Self { .loop(true) }
-  static func muted(_ on: Bool) -> Self { .init(key: "muted", value: on ? "" : nil) }
+  static func muted(_ on: Bool) -> Self { .init(key: "muted", value: on ? "true" : "false") }
   static var muted: Self { .muted(true) }
-  static func playsinline(_ on: Bool) -> Self { .init(key: "playsinline", value: on ? "" : nil) }
+  static func playsinline(_ on: Bool) -> Self { .init(key: "playsinline", value: on ? "true" : "false") }
   static var playsinline: Self { .playsinline(true) }
   static func poster(_ v: String) -> Self { .init(key: "poster", value: v) }
   static func preload(_ v: Preload) -> Self { .init(key: "preload", value: v.rawValue) }
@@ -380,7 +380,7 @@ public extension HTMLAttribute where AttributeType == TableHTMLAttribute {
 // MARK: - Ordered List Attributes
 
 public extension HTMLAttribute where AttributeType == OlHTMLAttribute {
-  static func reversed(_ on: Bool) -> Self { .init(key: "reversed", value: on ? "" : nil) }
+  static func reversed(_ on: Bool) -> Self { .init(key: "reversed", value: on ? "true" : "false") }
   static var reversed: Self { .reversed(true) }
   static func start(_ v: some BinaryInteger) -> Self { .init(key: "start", value: "\(v)") }
   static func type(_ v: String) -> Self { .init(key: "type", value: v) }
@@ -405,15 +405,15 @@ public extension HTMLAttribute where AttributeType == MeterHTMLAttribute {
 // MARK: - Script Element Attributes
 
 public extension HTMLAttribute where AttributeType == ScriptHTMLAttribute {
-  static func async(_ on: Bool) -> Self { .init(key: "async", value: on ? "" : nil) }
+  static func async(_ on: Bool) -> Self { .init(key: "async", value: on ? "true" : "false") }
   static var async: Self { .async(true) }
   static func blocking(_ v: String) -> Self { .init(key: "blocking", value: v) }
   static func crossorigin(_ v: CrossOrigin) -> Self { .init(key: "crossorigin", value: v.rawValue) }
-  static func `defer`(_ on: Bool) -> Self { .init(key: "defer", value: on ? "" : nil) }
+  static func `defer`(_ on: Bool) -> Self { .init(key: "defer", value: on ? "true" : "false") }
   static var `defer`: Self { .defer(true) }
   static func fetchpriority(_ v: FetchPriority) -> Self { .init(key: "fetchpriority", value: v.rawValue) }
   static func integrity(_ v: String) -> Self { .init(key: "integrity", value: v) }
-  static func nomodule(_ on: Bool) -> Self { .init(key: "nomodule", value: on ? "" : nil) }
+  static func nomodule(_ on: Bool) -> Self { .init(key: "nomodule", value: on ? "true" : "false") }
   static var nomodule: Self { .nomodule(true) }
   static func referrerpolicy(_ v: ReferrerPolicy) -> Self { .init(key: "referrerpolicy", value: v.rawValue) }
   static func type(_ v: String) -> Self { .init(key: "type", value: v) }
@@ -423,9 +423,9 @@ public extension HTMLAttribute where AttributeType == ScriptHTMLAttribute {
 
 public extension HTMLAttribute where AttributeType == IframeHTMLAttribute {
   static func allow(_ v: String) -> Self { .init(key: "allow", value: v) }
-  static func allowfullscreen(_ on: Bool) -> Self { .init(key: "allowfullscreen", value: on ? "" : nil) }
+  static func allowfullscreen(_ on: Bool) -> Self { .init(key: "allowfullscreen", value: on ? "true" : "false") }
   static var allowfullscreen: Self { .allowfullscreen(true) }
-  static func allowpaymentrequest(_ on: Bool) -> Self { .init(key: "allowpaymentrequest", value: on ? "" : nil) }
+  static func allowpaymentrequest(_ on: Bool) -> Self { .init(key: "allowpaymentrequest", value: on ? "true" : "false") }
   static var allowpaymentrequest: Self { .allowpaymentrequest(true) }
   static func csp(_ v: String) -> Self { .init(key: "csp", value: v) }
   static func loading(_ v: Loading) -> Self { .init(key: "loading", value: v.rawValue) }
@@ -438,14 +438,14 @@ public extension HTMLAttribute where AttributeType == IframeHTMLAttribute {
 // MARK: - Details Element Attributes
 
 public extension HTMLAttribute where AttributeType == DetailsHTMLAttribute {
-  static func open(_ on: Bool) -> Self { .init(key: "open", value: on ? "" : nil) }
+  static func open(_ on: Bool) -> Self { .init(key: "open", value: on ? "true" : "false") }
   static var open: Self { .open(true) }
 }
 
 // MARK: - Dialog Element Attributes
 
 public extension HTMLAttribute where AttributeType == DialogHTMLAttribute {
-  static func open(_ on: Bool) -> Self { .init(key: "open", value: on ? "" : nil) }
+  static func open(_ on: Bool) -> Self { .init(key: "open", value: on ? "true" : "false") }
   static var open: Self { .open(true) }
 }
 
@@ -458,7 +458,7 @@ public extension HTMLAttribute where AttributeType == CanvasHTMLAttribute {
 // MARK: - Track Element Attributes
 
 public extension HTMLAttribute where AttributeType == TrackHTMLAttribute {
-  static func `default`(_ on: Bool) -> Self { .init(key: "default", value: on ? "" : nil) }
+  static func `default`(_ on: Bool) -> Self { .init(key: "default", value: on ? "true" : "false") }
   static var `default`: Self { .default(true) }
   static func kind(_ v: TrackKind) -> Self { .init(key: "kind", value: v.rawValue) }
   static func label(_ v: String) -> Self { .init(key: "label", value: v) }
@@ -502,23 +502,23 @@ public extension HTMLAttribute where AttributeType == ObjectHTMLAttribute {
 // MARK: - Option Element Attributes
 
 public extension HTMLAttribute where AttributeType == OptionHTMLAttribute {
-  static func disabled(_ on: Bool) -> Self { .init(key: "disabled", value: on ? "" : nil) }
+  static func disabled(_ on: Bool) -> Self { .init(key: "disabled", value: on ? "true" : "false") }
   static var disabled: Self { .disabled(true) }
-  static func selected(_ on: Bool) -> Self { .init(key: "selected", value: on ? "" : nil) }
+  static func selected(_ on: Bool) -> Self { .init(key: "selected", value: on ? "true" : "false") }
   static var selected: Self { .selected(true) }
 }
 
 // MARK: - Optgroup Element Attributes
 
 public extension HTMLAttribute where AttributeType == OptgroupHTMLAttribute {
-  static func disabled(_ on: Bool) -> Self { .init(key: "disabled", value: on ? "" : nil) }
+  static func disabled(_ on: Bool) -> Self { .init(key: "disabled", value: on ? "true" : "false") }
   static var disabled: Self { .disabled(true) }
 }
 
 // MARK: - Fieldset Element Attributes
 
 public extension HTMLAttribute where AttributeType == FieldsetHTMLAttribute {
-  static func disabled(_ on: Bool) -> Self { .init(key: "disabled", value: on ? "" : nil) }
+  static func disabled(_ on: Bool) -> Self { .init(key: "disabled", value: on ? "true" : "false") }
   static var disabled: Self { .disabled(true) }
   static func form(_ v: String) -> Self { .init(key: "form", value: v) }
 }
