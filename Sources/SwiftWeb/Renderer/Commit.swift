@@ -224,11 +224,18 @@ final class CommitPhase {
     // Remove old attributes
     for (key, _) in oldProps where newProps[key] == nil {
       _ = node.removeAttribute?(key)
+      node[key] = nil
     }
 
     // Add/update new attributes
     for (key, value) in newProps where oldProps[key] != value {
       _ = node.setAttribute?(key, value)
+      switch key {
+      case "value": node[key] = JSValue.string(value)
+      case "checked": node[key] = JSValue.boolean(value == "true")
+      case "selected": node[key] = JSValue.boolean(value == "true")
+      default: break
+      }
     }
   }
 

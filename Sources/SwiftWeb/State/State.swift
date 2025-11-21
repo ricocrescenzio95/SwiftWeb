@@ -12,13 +12,6 @@ public protocol StateBindable {
   func bind<T>(stateName: String, to state: State<T>)
 }
 
-@attached(extension, conformances: ComponentNode, names: named(__bindStorage))
-public macro Component() = #externalMacro(module: "SwiftHTMLMacros", type: "ComponentMacro")
-
-@attached(accessor)
-@attached(peer, names: prefixed(_), prefixed(`$`))
-public macro State() = #externalMacro(module: "SwiftHTMLMacros", type: "StateMacro")
-
 final class StateBox {
   weak var fiber: Fiber?
   var stateName: String?
@@ -28,7 +21,11 @@ final class StateBox {
       fiber?.states[stateName ?? ""] ?? initialValue
     }
     set {
-      fiber?.states[stateName ?? ""] = newValue
+      guard let fiber, let renderer else {
+        fatalError("Cannot mutate unmounted view state")
+      }
+      fiber.states[stateName ?? ""] = newValue
+      renderer.scheduleStateUpdate(from: fiber)
     }
   }
   public init(_ initialValue: Any) {
@@ -43,22 +40,16 @@ public struct State<Value> {
     box = .init(wrappedValue)
   }
   
-  public var value: Value {
+  public var wrappedValue: Value {
     get { box.value as! Value }
-    nonmutating set {
-      guard let fiber = box.fiber, let renderer else {
-        fatalError("Cannot mutate unmounted view state")
-      }
-      box.value = newValue
-      renderer.scheduleStateUpdate(from: fiber)
-    }
+    nonmutating set { box.value = newValue }
   }
   
   public var projectedValue: Binding<Value> {
     .init {
-      value
+      wrappedValue
     } set: {
-      value = $0
+      wrappedValue = $0
     }
   }
 }

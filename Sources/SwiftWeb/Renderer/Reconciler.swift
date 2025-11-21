@@ -269,6 +269,7 @@ final class Reconciler {
     let fiber = Fiber(
       tag: newFiber.tag,
       type: newFiber.type,
+      elementType: newFiber.elementType,
       key: newFiber.key,
       pendingProps: newFiber.pendingProps,
       textContent: newFiber.textContent

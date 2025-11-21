@@ -30,14 +30,14 @@ extension StateMacro: AccessorMacro {
     let getter: AccessorDeclSyntax =
       """
       get {
-        \(raw: storageName).value
+        \(raw: storageName).wrappedValue
       }
       """
 
     let setter: AccessorDeclSyntax =
       """
       nonmutating set {
-        \(raw: storageName).value = newValue
+        \(raw: storageName).wrappedValue = newValue
       }
       """
 

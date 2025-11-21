@@ -58,7 +58,7 @@ let supportedEvents = [
 ]
 
 class GlobalEventHandler {
-  var eventHandlers: [JSObject: [EventName: [EventHandler]]] = [:]
+  private var eventHandlers: [JSObject: [EventName: [EventHandler]]] = [:]
   
   init() {
     setupEventDelegation()

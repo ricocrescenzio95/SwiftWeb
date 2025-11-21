@@ -1,31 +1,33 @@
 // MARK: - Enums for Attribute Values
 
-public enum Dir: String { case ltr, rtl, auto }
-public enum ContentEditable: String { case `true`, `false`, plaintextOnly = "plaintext-only" }
-public enum EnterKeyHint: String { case enter, done, go, next, previous, search, send }
-public enum InputMode: String { case none, text, tel, url, email, numeric, decimal, search }
-public enum Translate: String { case yes, no }
+private typealias AttributeValueType = Sendable & Hashable & Codable
 
-public enum InputType: String {
+public enum Dir: String, AttributeValueType { case ltr, rtl, auto }
+public enum ContentEditable: String, AttributeValueType { case `true`, `false`, plaintextOnly = "plaintext-only" }
+public enum EnterKeyHint: String, AttributeValueType { case enter, done, go, next, previous, search, send }
+public enum InputMode: String, AttributeValueType { case none, text, tel, url, email, numeric, decimal, search }
+public enum Translate: String, AttributeValueType { case yes, no }
+
+public enum InputType: String, AttributeValueType {
   case button, checkbox, color, date, datetimeLocal = "datetime-local"
   case email, file, hidden, image, month, number, password
   case radio, range, reset, search, submit, tel, text, time, url, week
 }
 
-public enum ButtonType: String { case button, reset, submit }
-public enum FormMethod: String { case get, post, dialog }
-public enum FormEnctype: String {
+public enum ButtonType: String, AttributeValueType { case button, reset, submit }
+public enum FormMethod: String, AttributeValueType { case get, post, dialog }
+public enum FormEnctype: String, AttributeValueType {
   case urlencoded = "application/x-www-form-urlencoded"
   case multipart = "multipart/form-data"
   case text = "text/plain"
 }
-public enum Autocomplete: String { case on, off }
-public enum Preload: String { case none, metadata, auto }
-public enum CrossOrigin: String { case anonymous, useCredentials = "use-credentials" }
-public enum Decoding: String { case sync, async, auto }
-public enum Loading: String { case eager, lazy }
-public enum FetchPriority: String { case high, low, auto }
-public enum ReferrerPolicy: String {
+public enum Autocomplete: String, AttributeValueType { case on, off }
+public enum Preload: String, AttributeValueType { case none, metadata, auto }
+public enum CrossOrigin: String, AttributeValueType { case anonymous, useCredentials = "use-credentials" }
+public enum Decoding: String, AttributeValueType { case sync, async, auto }
+public enum Loading: String, AttributeValueType { case eager, lazy }
+public enum FetchPriority: String, AttributeValueType { case high, low, auto }
+public enum ReferrerPolicy: String, AttributeValueType {
   case noReferrer = "no-referrer"
   case noReferrerWhenDowngrade = "no-referrer-when-downgrade"
   case origin, originWhenCrossOrigin = "origin-when-cross-origin"
@@ -34,12 +36,12 @@ public enum ReferrerPolicy: String {
   case strictOriginWhenCrossOrigin = "strict-origin-when-cross-origin"
   case unsafeUrl = "unsafe-url"
 }
-public enum Scope: String { case row, col, rowgroup, colgroup }
-public enum Shape: String { case rect, circle, poly, `default` }
-public enum Target: String { case _blank = "_blank", _self = "_self", _parent = "_parent", _top = "_top" }
-public enum Wrap: String { case soft, hard, off }
-public enum TrackKind: String { case subtitles, captions, descriptions, chapters, metadata }
-public enum Sandbox: String {
+public enum Scope: String, AttributeValueType { case row, col, rowgroup, colgroup }
+public enum Shape: String, AttributeValueType { case rect, circle, poly, `default` }
+public enum Target: String, AttributeValueType { case _blank = "_blank", _self = "_self", _parent = "_parent", _top = "_top" }
+public enum Wrap: String, AttributeValueType { case soft, hard, off }
+public enum TrackKind: String, AttributeValueType { case subtitles, captions, descriptions, chapters, metadata }
+public enum Sandbox: String, AttributeValueType {
   case allowForms = "allow-forms"
   case allowModals = "allow-modals"
   case allowOrientationLock = "allow-orientation-lock"
@@ -53,22 +55,24 @@ public enum Sandbox: String {
   case allowTopNavigationByUserActivation = "allow-top-navigation-by-user-activation"
 }
 
-public enum RelValue: String {
+public enum RelValue: String, AttributeValueType {
   case alternate, author, bookmark, canonical, dnsPrefetch = "dns-prefetch"
   case `external` = "external", help, icon, license, manifest, me, modulepreload
   case next, nofollow, noopener, noreferrer, opener, pingback, preconnect
   case prefetch, preload, prerender, prev, search, stylesheet, tag
 }
 
-public enum InputModeValue: String {
+public enum InputModeValue: String, AttributeValueType {
   case none, text, decimal, numeric, tel, search, email, url
 }
 
 // MARK: - HTMLAttribute
 
-public struct HTMLAttribute<AttributeType> {
+public struct HTMLAttribute<AttributeType>: AttributeValueType, Identifiable {
   public let key: String
   public let value: String?
+  
+  public var id: String { key }
   
   private init(key: String, value: String?) {
     self.key = key
@@ -107,8 +111,9 @@ public extension HTMLAttribute {
   static var popover: Self { .popover(true) }
   static func slot(_ v: String) -> Self { .init(key: "slot", value: v) }
   static func spellcheck(_ on: Bool) -> Self { .init(key: "spellcheck", value: on ? "true" : "false") }
-  static func style(_ css: CSS.Property...) -> Self { .init(key: "style", value: CSS.Body(css).cssValue) }
-  static func style(_ css: [CSS.Property]) -> Self { .init(key: "style", value: CSS.Body(css).cssValue) }
+  static func style(_ css: CSS.Property...) -> Self { .init(key: "style", value: CSS.Body(css).css) }
+  static func style(_ css: [CSS.Property]) -> Self { .init(key: "style", value: CSS.Body(css).css) }
+  static func style(@CSS.PropertyBuilder _ css: () -> [CSS.Property]) -> Self { .init(key: "style", value: CSS.Body(css()).css) }
   static func tabindex(_ i: Int) -> Self { .init(key: "tabindex", value: String(i)) }
   static func title(_ v: String) -> Self { .init(key: "title", value: v) }
   static func translate(_ v: Translate) -> Self { .init(key: "translate", value: v.rawValue) }

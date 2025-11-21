@@ -68,7 +68,7 @@ final class Fiber {
   var key: AnyHashable?
 
   /// Type of the element (for components)
-  var elementType: (any Node.Type)?
+  var elementType: (any Node.Type)
 
   /// Resolved type (same as elementType for now)
   var type: String
@@ -150,12 +150,14 @@ final class Fiber {
   init(
     tag: FiberTag,
     type: String,
+    elementType: (some Node).Type,
     key: AnyHashable? = nil,
     pendingProps: [String: String] = [:],
     textContent: String? = nil
   ) {
     self.tag = tag
     self.type = type
+    self.elementType = elementType
     self.key = key
     self.pendingProps = pendingProps
     self.memoizedProps = [:]
@@ -221,6 +223,7 @@ extension Fiber {
       workInProgress = Fiber(
         tag: current.tag,
         type: current.type,
+        elementType: current.elementType,
         key: current.key,
         pendingProps: pendingProps
       )

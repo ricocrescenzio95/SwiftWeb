@@ -37,6 +37,7 @@ struct FiberConverter {
     let fiber = Fiber(
       tag: .hostDOM,
       type: Element.name,
+      elementType: Element.self,
       pendingProps: attrs
     )
     fiber.sourceNode = element
@@ -86,6 +87,7 @@ struct FiberConverter {
     let fiber = Fiber(
       tag: .hostText,
       type: "#text",
+      elementType: String.self,
       textContent: text
     )
     fiber.lanes = lane
@@ -94,10 +96,11 @@ struct FiberConverter {
 
   // MARK: - Components
 
-  func convertComponent(_ component: any ComponentNode, lane: Lane) -> Fiber? {
+  func convertComponent<Component: ComponentNode>(_ component: Component, lane: Lane) -> Fiber? {
     let fiber = Fiber(
       tag: .component,
-      type: "#component"
+      type: "#component",
+      elementType: Component.self,
     )
     fiber.sourceNode = component
     fiber.lanes = lane
@@ -167,7 +170,7 @@ struct FiberConverter {
     var lastFiber: Fiber?
 
     for element in forEach.data {
-      let key = AnyHashable(forEach.id(element))
+      let key = AnyHashable(forEach.key(element))
       let content = forEach.contents(element)
 
       guard let fiber = convert(content, lane: lane) else { continue }
@@ -225,6 +228,6 @@ extension ForEach: FiberConvertible {
 
 extension EmptyNode: FiberConvertible {
   func convert(using converter: FiberConverter, lane: Lane) -> Fiber? {
-    .init(tag: .hostText, type: "")
+    .init(tag: .hostText, type: "", elementType: String.self)
   }
 }

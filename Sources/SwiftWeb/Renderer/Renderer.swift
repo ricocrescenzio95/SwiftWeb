@@ -47,9 +47,6 @@ public final class Renderer {
   /// Frame budget in milliseconds (how long we can work before yielding)
   private let frameBudget: TimeInterval = 5.0 / 1000.0  // 5ms
 
-  /// Reference to the app for re-rendering
-  private var currentApp: (any App)?
-
   // MARK: - Initialization
 
   public init() {
@@ -59,13 +56,10 @@ public final class Renderer {
   // MARK: - Main Entry Points
 
   /// Start rendering an app
-  public func start(app: some App) {
-    // Store app for re-rendering
-    currentApp = app
-
+  public func start<A: App>(app: A) {
     // Create initial root fiber if needed
     if root.current == nil {
-      let rootFiber = Fiber(tag: .hostRoot, type: "root")
+      let rootFiber = Fiber(tag: .hostRoot, type: "root", elementType: A.self)
       root.current = rootFiber
     }
 
@@ -98,7 +92,7 @@ public final class Renderer {
   /// Trigger a re-render when state changes
   /// Re-renders starting from the component that owns the changed state
   func scheduleStateUpdate(from fiber: Fiber) {
-    print("🔄 [State Update] Starting component re-render from fiber: \(fiber.type)")
+    print("🔄 [State Update] Starting component re-render from fiber: \(fiber.elementType)")
 
     // Find the component fiber (the fiber passed should be the component itself)
     guard fiber.isComponent else {
@@ -284,11 +278,6 @@ public final class Renderer {
 
   /// Internal method to render the app
   private func renderApp(_ app: any App) {
-    // Convert app to fiber tree
-    guard reconciler.converter.convert(app, lane: .defaultLane) != nil else {
-      return
-    }
-
     // Reconcile with current tree
     let workInProgress = reconciler.reconcile(
       current: root.current,
@@ -448,7 +437,7 @@ public final class Renderer {
     // Get the current root fiber or create one
     if root.current == nil {
       // Create initial root fiber
-      let rootFiber = Fiber(tag: .hostRoot, type: "root")
+      let rootFiber = Fiber(tag: .hostRoot, type: "root", elementType: Never.self)
       root.current = rootFiber
     }
 

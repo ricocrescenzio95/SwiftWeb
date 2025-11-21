@@ -95,10 +95,10 @@ public struct StyleHTMLElement<Content: Node>: HTMLElement {
   public var content: Content
 }
 public func style(_ attributes: HTMLAttribute<StyleHTMLAttribute>..., @CSS content: () -> [CSS.Selector]) -> StyleHTMLElement<some Node> {
-  .init(attributes: attributes, content: content().lazy.map(\.cssValue).joined(separator: "\n"))
+  .init(attributes: attributes, content: content().lazy.map(\.css).joined(separator: "\n"))
 }
 public func style(_ attributes: [HTMLAttribute<StyleHTMLAttribute>], @CSS content: () -> [CSS.Selector]) -> StyleHTMLElement<some Node> {
-  .init(attributes: attributes, content: content().lazy.map(\.cssValue).joined(separator: "\n"))
+  .init(attributes: attributes, content: content().lazy.map(\.css).joined(separator: "\n"))
 }
 
 // MARK: - Sectioning Root

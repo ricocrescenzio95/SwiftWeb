@@ -1,11 +1,5 @@
 extension CSS {
-  public protocol Convertible {
-    var cssValue: String { get }
-  }
-}
-
-extension CSS {
-  public struct Selector: Sendable, Hashable, Codable, Convertible {
+  public struct Selector: Sendable, Hashable, Codable {
     public var selector: String
     public var body: Body
     
@@ -14,10 +8,18 @@ extension CSS {
       self.body = .init(properties)
     }
     
-    public var cssValue: String {
+    public init(_ selector: String, _ properties: Property...) {
+      self.init(selector, properties)
+    }
+    
+    public init(_ selector: String, @CSS.PropertyBuilder _ properties: () -> [CSS.Property]) {
+      self.init(selector, properties())
+    }
+    
+    public var css: String {
       """
       \(selector) {
-        \(body.cssValue)
+        \(body.css)
       }
       """
     }
@@ -25,10 +27,7 @@ extension CSS {
 }
 
 extension String {
-  public func callAsFunction(_ properties: CSS.Property...) -> CSS.Selector {
-    .init(self, properties)
-  }
-  public func callAsFunction(_ properties: [CSS.Property]) -> CSS.Selector {
+  public func css(@CSS.PropertyBuilder _ properties: () -> [CSS.Property]) -> CSS.Selector {
     .init(self, properties)
   }
 }

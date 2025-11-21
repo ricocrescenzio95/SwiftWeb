@@ -1,5 +1,7 @@
+private typealias CSSType = Sendable & Hashable & Codable
+
 extension CSS {
-  public enum Unit: Hashable, Sendable, Codable, Convertible, ExpressibleByFloatLiteral, ExpressibleByIntegerLiteral, ExpressibleByNilLiteral {
+  public enum Unit: CSSType, ExpressibleByFloatLiteral, ExpressibleByIntegerLiteral, ExpressibleByNilLiteral {
     // Absolute length units
     case px(Double)      // Pixels
     case cm(Double)      // Centimeters
@@ -44,7 +46,7 @@ extension CSS {
     case fr(Double)      // Fraction of available space
     
     // Convierte el valor a string CSS
-    public var cssValue: String {
+    public var css: String {
       switch self {
       // Absolute length units
       case .px(let value): return "\(value)px"
@@ -105,15 +107,183 @@ extension CSS {
   }
 }
 
+extension BinaryInteger {
+  public var px: CSS.Unit {
+    .px(Double(self))
+  }
+  public var cm: CSS.Unit {
+    .cm(Double(self))
+  }
+  public var mm: CSS.Unit {
+    .mm(Double(self))
+  }
+  public var q: CSS.Unit {
+    .q(Double(self))
+  }
+  public var inches: CSS.Unit {
+    .inches(Double(self))
+  }
+  public var pc: CSS.Unit {
+    .pc(Double(self))
+  }
+  public var pt: CSS.Unit {
+    .pt(Double(self))
+  }
+  public var em: CSS.Unit {
+    .em(Double(self))
+  }
+  public var ex: CSS.Unit {
+    .ex(Double(self))
+  }
+  public var ch: CSS.Unit {
+    .ch(Double(self))
+  }
+  public var rem: CSS.Unit {
+    .rem(Double(self))
+  }
+  public var lh: CSS.Unit {
+    .lh(Double(self))
+  }
+  public var rlh: CSS.Unit {
+    .rlh(Double(self))
+  }
+  public var vw: CSS.Unit {
+    .vw(Double(self))
+  }
+  public var vh: CSS.Unit {
+    .vh(Double(self))
+  }
+  public var vmin: CSS.Unit {
+    .vmin(Double(self))
+  }
+  public var vmax: CSS.Unit {
+    .vmax(Double(self))
+  }
+  public var vb: CSS.Unit {
+    .vb(Double(self))
+  }
+  public var vi: CSS.Unit {
+    .vi(Double(self))
+  }
+  public var cqw: CSS.Unit {
+    .cqw(Double(self))
+  }
+  public var cqh: CSS.Unit {
+    .cqh(Double(self))
+  }
+  public var cqi: CSS.Unit {
+    .cqi(Double(self))
+  }
+  public var cqb: CSS.Unit {
+    .cqb(Double(self))
+  }
+  public var cqmin: CSS.Unit {
+    .cqmin(Double(self))
+  }
+  public var cqmax: CSS.Unit {
+    .cqmax(Double(self))
+  }
+  public var percent: CSS.Unit {
+    .percent(Double(self))
+  }
+  public var fr: CSS.Unit {
+    .fr(Double(self))
+  }
+}
+
+extension BinaryFloatingPoint {
+  public var px: CSS.Unit {
+    .px(Double(self))
+  }
+  public var cm: CSS.Unit {
+    .cm(Double(self))
+  }
+  public var mm: CSS.Unit {
+    .mm(Double(self))
+  }
+  public var q: CSS.Unit {
+    .q(Double(self))
+  }
+  public var inches: CSS.Unit {
+    .inches(Double(self))
+  }
+  public var pc: CSS.Unit {
+    .pc(Double(self))
+  }
+  public var pt: CSS.Unit {
+    .pt(Double(self))
+  }
+  public var em: CSS.Unit {
+    .em(Double(self))
+  }
+  public var ex: CSS.Unit {
+    .ex(Double(self))
+  }
+  public var ch: CSS.Unit {
+    .ch(Double(self))
+  }
+  public var rem: CSS.Unit {
+    .rem(Double(self))
+  }
+  public var lh: CSS.Unit {
+    .lh(Double(self))
+  }
+  public var rlh: CSS.Unit {
+    .rlh(Double(self))
+  }
+  public var vw: CSS.Unit {
+    .vw(Double(self))
+  }
+  public var vh: CSS.Unit {
+    .vh(Double(self))
+  }
+  public var vmin: CSS.Unit {
+    .vmin(Double(self))
+  }
+  public var vmax: CSS.Unit {
+    .vmax(Double(self))
+  }
+  public var vb: CSS.Unit {
+    .vb(Double(self))
+  }
+  public var vi: CSS.Unit {
+    .vi(Double(self))
+  }
+  public var cqw: CSS.Unit {
+    .cqw(Double(self))
+  }
+  public var cqh: CSS.Unit {
+    .cqh(Double(self))
+  }
+  public var cqi: CSS.Unit {
+    .cqi(Double(self))
+  }
+  public var cqb: CSS.Unit {
+    .cqb(Double(self))
+  }
+  public var cqmin: CSS.Unit {
+    .cqmin(Double(self))
+  }
+  public var cqmax: CSS.Unit {
+    .cqmax(Double(self))
+  }
+  public var percent: CSS.Unit {
+    .percent(Double(self))
+  }
+  public var fr: CSS.Unit {
+    .fr(Double(self))
+  }
+}
+
 extension CSS {
-  public struct Box: Sendable, Hashable, Codable, Convertible, ExpressibleByFloatLiteral, ExpressibleByIntegerLiteral, ExpressibleByNilLiteral {
+  public struct Box: CSSType, ExpressibleByFloatLiteral, ExpressibleByIntegerLiteral, ExpressibleByNilLiteral {
     public var top: Unit
     public var right: Unit
     public var bottom: Unit
     public var left: Unit
     
     // All four sides
-    public init(top: Unit, right: Unit, bottom: Unit, left: Unit) {
+    public init(top: Unit = .auto, right: Unit = .auto, bottom: Unit = .auto, left: Unit = .auto) {
       self.top = top
       self.right = right
       self.bottom = bottom
@@ -121,7 +291,7 @@ extension CSS {
     }
     
     // All sides the same
-    public init(all: Unit) {
+    public init(_ all: Unit) {
       self.top = all
       self.right = all
       self.bottom = all
@@ -129,7 +299,8 @@ extension CSS {
     }
     
     // Vertical and horizontal
-    public init(vertical: Unit, horizontal: Unit) {
+    @_disfavoredOverload
+    public init(vertical: Unit = .auto, horizontal: Unit = .auto) {
       self.top = vertical
       self.right = horizontal
       self.bottom = vertical
@@ -145,39 +316,39 @@ extension CSS {
     }
     
     //  string representation
-    public var cssValue: String {
+    public var css: String {
       // Optimize output based on which values are equal
       if top == right && right == bottom && bottom == left {
         // All the same: "10px"
-        return top.cssValue
+        return top.css
       } else if top == bottom && right == left {
         // Vertical/Horizontal: "10px 20px"
-        return "\(top.cssValue) \(right.cssValue)"
+        return "\(top.css) \(right.css)"
       } else if right == left {
         // Top, Horizontal, Bottom: "10px 20px 30px"
-        return "\(top.cssValue) \(right.cssValue) \(bottom.cssValue)"
+        return "\(top.css) \(right.css) \(bottom.css)"
       } else {
         // All different: "10px 20px 30px 40px"
-        return "\(top.cssValue) \(right.cssValue) \(bottom.cssValue) \(left.cssValue)"
+        return "\(top.css) \(right.css) \(bottom.css) \(left.css)"
       }
     }
     
     public init(floatLiteral value: Double) {
-      self = .init(all: .px(value))
+      self = .init(.px(value))
     }
     
     public init(integerLiteral value: IntegerLiteralType) {
-      self = .init(all: .px(Double(value)))
+      self = .init(.px(Double(value)))
     }
     
     public init(nilLiteral: ()) {
-      self = .init(all: .auto)
+      self = .init(.auto)
     }
   }
   
   // MARK: - Value Types
   
-  public enum Color: Sendable, Hashable, Codable, Convertible {
+  public enum Color: CSSType {
     case hex(String)
     case rgb(red: Int, green: Int, blue: Int)
     case rgba(red: Int, green: Int, blue: Int, alpha: Double)
@@ -188,7 +359,7 @@ extension CSS {
     case transparent
     case raw(String)
     
-    public var cssValue: String {
+    public var css: String {
       switch self {
       case .hex(let value): return value
       case .rgb(let r, let g, let b): return "rgb(\(r), \(g), \(b))"
@@ -355,7 +526,7 @@ extension CSS {
     public static let rebeccaPurple = Color.named("rebeccapurple")
   }
   
-  public enum Display: String, Sendable, Hashable, Codable, Convertible {
+  public enum Display: String, CSSType {
     case block, inline, inlineBlock = "inline-block"
     case flex, inlineFlex = "inline-flex"
     case grid, inlineGrid = "inline-grid"
@@ -364,77 +535,77 @@ extension CSS {
     case listItem = "list-item"
     case flowRoot = "flow-root"
     
-    public var cssValue: String { rawValue }
+    public var css: String { rawValue }
   }
   
-  public enum Position: String, Sendable, Hashable, Codable, Convertible {
+  public enum Position: String, CSSType {
     case `static`, relative, absolute, fixed, sticky
     
-    public var cssValue: String { rawValue }
+    public var css: String { rawValue }
   }
   
-  public enum Visibility: String, Sendable, Hashable, Codable, Convertible {
+  public enum Visibility: String, CSSType {
     case visible, hidden, collapse
     
-    public var cssValue: String { rawValue }
+    public var css: String { rawValue }
   }
   
-  public enum Overflow: String, Sendable, Hashable, Codable, Convertible {
+  public enum Overflow: String, CSSType {
     case visible, hidden, scroll, auto, clip
     
-    public var cssValue: String { rawValue }
+    public var css: String { rawValue }
   }
   
-  public enum FlexDirection: String, Sendable, Hashable, Codable, Convertible {
+  public enum FlexDirection: String, CSSType {
     case row, rowReverse = "row-reverse"
     case column, columnReverse = "column-reverse"
     
-    public var cssValue: String { rawValue }
+    public var css: String { rawValue }
   }
   
-  public enum FlexWrap: String, Sendable, Hashable, Codable, Convertible {
+  public enum FlexWrap: String, CSSType {
     case nowrap, wrap, wrapReverse = "wrap-reverse"
     
-    public var cssValue: String { rawValue }
+    public var css: String { rawValue }
   }
   
-  public enum JustifyContent: String, Sendable, Hashable, Codable, Convertible {
+  public enum JustifyContent: String, CSSType {
     case flexStart = "flex-start", flexEnd = "flex-end", center
     case spaceBetween = "space-between", spaceAround = "space-around", spaceEvenly = "space-evenly"
     case start, end, left, right
     case stretch
     
-    public var cssValue: String { rawValue }
+    public var css: String { rawValue }
   }
   
-  public enum AlignItems: String, Sendable, Hashable, Codable, Convertible {
+  public enum AlignItems: String, CSSType {
     case flexStart = "flex-start", flexEnd = "flex-end", center
     case baseline, stretch
     case start, end, selfStart = "self-start", selfEnd = "self-end"
     
-    public var cssValue: String { rawValue }
+    public var css: String { rawValue }
   }
   
-  public enum AlignContent: String, Sendable, Hashable, Codable, Convertible {
+  public enum AlignContent: String, CSSType {
     case flexStart = "flex-start", flexEnd = "flex-end", center
     case spaceBetween = "space-between", spaceAround = "space-around", spaceEvenly = "space-evenly"
     case stretch, start, end
     
-    public var cssValue: String { rawValue }
+    public var css: String { rawValue }
   }
   
-  public enum TextAlign: String, Sendable, Hashable, Codable, Convertible {
+  public enum TextAlign: String, CSSType {
     case left, right, center, justify
     case start, end
     
-    public var cssValue: String { rawValue }
+    public var css: String { rawValue }
   }
   
-  public enum FontWeight: Sendable, Hashable, Codable, Convertible {
+  public enum FontWeight: CSSType {
     case normal, bold, bolder, lighter
     case weight(Int)
     
-    public var cssValue: String {
+    public var css: String {
       switch self {
       case .normal: return "normal"
       case .bold: return "bold"
@@ -445,43 +616,43 @@ extension CSS {
     }
   }
   
-  public enum FontStyle: String, Sendable, Hashable, Codable, Convertible {
+  public enum FontStyle: String, CSSType {
     case normal, italic, oblique
     
-    public var cssValue: String { rawValue }
+    public var css: String { rawValue }
   }
   
-  public enum TextTransform: String, Sendable, Hashable, Codable, Convertible {
+  public enum TextTransform: String, CSSType {
     case none, capitalize, uppercase, lowercase
     
-    public var cssValue: String { rawValue }
+    public var css: String { rawValue }
   }
   
-  public enum TextDecoration: String, Sendable, Hashable, Codable, Convertible {
+  public enum TextDecoration: String, CSSType {
     case none, underline, overline, lineThrough = "line-through"
     
-    public var cssValue: String { rawValue }
+    public var css: String { rawValue }
   }
   
-  public enum WhiteSpace: String, Sendable, Hashable, Codable, Convertible {
+  public enum WhiteSpace: String, CSSType {
     case normal, nowrap, pre, preWrap = "pre-wrap", preLine = "pre-line", breakSpaces = "break-spaces"
     
-    public var cssValue: String { rawValue }
+    public var css: String { rawValue }
   }
   
-  public enum WordBreak: String, Sendable, Hashable, Codable, Convertible {
+  public enum WordBreak: String, CSSType {
     case normal, breakAll = "break-all", keepAll = "keep-all", breakWord = "break-word"
     
-    public var cssValue: String { rawValue }
+    public var css: String { rawValue }
   }
   
-  public enum BoxSizing: String, Sendable, Hashable, Codable, Convertible {
+  public enum BoxSizing: String, CSSType {
     case contentBox = "content-box", borderBox = "border-box"
     
-    public var cssValue: String { rawValue }
+    public var css: String { rawValue }
   }
   
-  public enum Cursor: String, Sendable, Hashable, Codable, Convertible {
+  public enum Cursor: String, CSSType {
     case auto, `default`, pointer, text, move, wait, help
     case notAllowed = "not-allowed", none
     case contextMenu = "context-menu", progress, cell, crosshair
@@ -492,46 +663,46 @@ extension CSS {
     case colResize = "col-resize", rowResize = "row-resize"
     case allScroll = "all-scroll", zoomIn = "zoom-in", zoomOut = "zoom-out"
     
-    public var cssValue: String { rawValue }
+    public var css: String { rawValue }
   }
   
-  public enum PointerEvents: String, Sendable, Hashable, Codable, Convertible {
+  public enum PointerEvents: String, CSSType {
     case auto, none
     
-    public var cssValue: String { rawValue }
+    public var css: String { rawValue }
   }
   
-  public enum UserSelect: String, Sendable, Hashable, Codable, Convertible {
+  public enum UserSelect: String, CSSType {
     case auto, none, text, all
     
-    public var cssValue: String { rawValue }
+    public var css: String { rawValue }
   }
   
-  public enum ObjectFit: String, Sendable, Hashable, Codable, Convertible {
+  public enum ObjectFit: String, CSSType {
     case fill, contain, cover, none, scaleDown = "scale-down"
     
-    public var cssValue: String { rawValue }
+    public var css: String { rawValue }
   }
   
-  public enum BorderStyle: String, Sendable, Hashable, Codable, Convertible {
+  public enum BorderStyle: String, CSSType {
     case none, hidden, dotted, dashed, solid, double, groove, ridge, inset, outset
     
-    public var cssValue: String { rawValue }
+    public var css: String { rawValue }
   }
   
-  public enum ListStyleType: String, Sendable, Hashable, Codable, Convertible {
+  public enum ListStyleType: String, CSSType {
     case none, disc, circle, square, decimal
     case decimalLeadingZero = "decimal-leading-zero"
     case lowerRoman = "lower-roman", upperRoman = "upper-roman"
     case lowerAlpha = "lower-alpha", upperAlpha = "upper-alpha"
     case lowerGreek = "lower-greek", lowerLatin = "lower-latin", upperLatin = "upper-latin"
     
-    public var cssValue: String { rawValue }
+    public var css: String { rawValue }
   }
   
-  public enum ListStylePosition: String, Sendable, Hashable, Codable, Convertible {
+  public enum ListStylePosition: String, CSSType {
     case inside, outside
     
-    public var cssValue: String { rawValue }
+    public var css: String { rawValue }
   }
 }
