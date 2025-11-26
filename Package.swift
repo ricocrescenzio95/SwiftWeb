@@ -16,6 +16,14 @@ let package = Package(
       .product(name: "SwiftSyntaxMacros", package: "swift-syntax"),
       .product(name: "SwiftCompilerPlugin", package: "swift-syntax")
     ]),
+    .executableTarget(
+      name: "SwiftWebRoutesFinder",
+      dependencies: [
+        .product(name: "SwiftSyntax", package: "swift-syntax"),
+        .product(name: "SwiftParser", package: "swift-syntax"),
+      ]
+    ),
+    .plugin(name: "SwiftWebRoutesFinderPlugin", capability: .buildTool(), dependencies: ["SwiftWebRoutesFinder"]),
     .target(name: "SwiftHTML"),
     .target(name: "SwiftWeb", dependencies: ["SwiftHTML", "JavaScriptKit", "SwiftHTMLMacros"], swiftSettings: [.defaultIsolation(MainActor.self)]),
     .executableTarget(
@@ -25,7 +33,8 @@ let package = Package(
       linkerSettings: [
         // Aumenta la memoria WASM stack size
         .unsafeFlags(["-Xlinker", "-z", "-Xlinker", "stack-size=16777216"], .when(platforms: [.wasi]))
-      ]
+      ],
+      plugins: [.plugin(name: "SwiftWebRoutesFinderPlugin")],
     ),
     .testTarget(
       name: "SwiftWebTests",

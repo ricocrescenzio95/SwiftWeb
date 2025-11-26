@@ -13,7 +13,7 @@ struct ComponentMacro: ExtensionMacro {
     in context: some MacroExpansionContext
   ) throws -> [ExtensionDeclSyntax] {
     // Validate that @Component is only applied to struct
-    validateStructDeclaration(declaration: declaration, in: context)
+    validateStructDeclarationAttribute(attribute: node, declaration: declaration, in: context)
 
     // Find all @State properties
     let members = declaration.memberBlock.members
@@ -70,65 +70,6 @@ extension \(type): @MainActor ComponentNode {\(raw: bindStorageMethods)
   }
 }
 
-// MARK: - Validation
-
-/// Validates that @Component is only applied to structs
-private func validateStructDeclaration(
-  declaration: some DeclGroupSyntax,
-  in context: some MacroExpansionContext
-) {
-  // Check if it's a struct
-  if declaration.is(StructDeclSyntax.self) {
-    // Valid - it's a struct
-    return
-  }
-
-  // Invalid - @Component applied to non-struct
-  var fixIts: [FixIt] = []
-
-  if let classDecl = declaration.as(ClassDeclSyntax.self) {
-    let fixIt = FixIt(
-      message: ComponentMacroFixIt.changeToStruct,
-      changes: [
-        .replace(
-          oldNode: Syntax(classDecl.classKeyword),
-          newNode: Syntax(TokenSyntax.keyword(.struct, trailingTrivia: classDecl.classKeyword.trailingTrivia))
-        )
-      ]
-    )
-    fixIts.append(fixIt)
-  } else if let actorDecl = declaration.as(ActorDeclSyntax.self) {
-    let fixIt = FixIt(
-      message: ComponentMacroFixIt.changeToStruct,
-      changes: [
-        .replace(
-          oldNode: Syntax(actorDecl.actorKeyword),
-          newNode: Syntax(TokenSyntax.keyword(.struct, trailingTrivia: actorDecl.actorKeyword.trailingTrivia))
-        )
-      ]
-    )
-    fixIts.append(fixIt)
-  } else if let enumDecl = declaration.as(EnumDeclSyntax.self) {
-    let fixIt = FixIt(
-      message: ComponentMacroFixIt.changeToStruct,
-      changes: [
-        .replace(
-          oldNode: Syntax(enumDecl.enumKeyword),
-          newNode: Syntax(TokenSyntax.keyword(.struct, trailingTrivia: enumDecl.enumKeyword.trailingTrivia))
-        )
-      ]
-    )
-    fixIts.append(fixIt)
-  }
-
-  let diagnostic = Diagnostic(
-    node: declaration,
-    message: ComponentMacroDiagnostic.notAStruct,
-    fixIts: fixIts
-  )
-  context.diagnose(diagnostic)
-}
-
 // MARK: - Diagnostics
 
 enum ComponentMacroFixIt: FixItMessage {
@@ -143,24 +84,5 @@ enum ComponentMacroFixIt: FixItMessage {
 
   var fixItID: MessageID {
     MessageID(domain: "SwiftHTMLMacros", id: "ComponentMacro.FixIt.\(self)")
-  }
-}
-
-enum ComponentMacroDiagnostic: DiagnosticMessage {
-  case notAStruct
-
-  var message: String {
-    switch self {
-    case .notAStruct:
-      return "@Component can only be applied to struct declarations"
-    }
-  }
-
-  var diagnosticID: MessageID {
-    MessageID(domain: "SwiftHTMLMacros", id: "ComponentMacro.\(self)")
-  }
-
-  var severity: DiagnosticSeverity {
-    .error
   }
 }

@@ -49,29 +49,29 @@ public final class Renderer {
 
   // MARK: - Initialization
 
-  public init() {
-    self.root = FiberRoot()
+  public init<A: App>(app: A.Type) {
+    root = FiberRoot()
+    router.jsHandler.onChange { [weak self] route in
+      self?.render(node: A.__page(for: route, context: .init()))
+    }
   }
 
   // MARK: - Main Entry Points
 
   /// Start rendering an app
-  public func start<A: App>(app: A) {
-    // Create initial root fiber if needed
-    if root.current == nil {
-      let rootFiber = Fiber(tag: .hostRoot, type: "root", elementType: A.self)
-      root.current = rootFiber
-    }
-
+  func render<N: Node>(node: N) {
+    let rootFiber = Fiber(tag: .hostRoot, type: "root", elementType: N.self)
+    root.current = rootFiber
+    
     // Convert app to fiber tree and attach as child of root
-    guard reconciler.converter.convert(app, lane: .syncLane) != nil else {
+    guard reconciler.converter.convert(node, lane: .syncLane) != nil else {
       return
     }
 
     // Reconcile with current tree
     let workInProgress = reconciler.reconcile(
       current: root.current,
-      newElement: app,
+      newElement: node,
       lane: .syncLane
     )
 
@@ -274,28 +274,6 @@ public final class Renderer {
         prevWipChild = child
       }
     }
-  }
-
-  /// Internal method to render the app
-  private func renderApp(_ app: any App) {
-    // Reconcile with current tree
-    let workInProgress = reconciler.reconcile(
-      current: root.current,
-      newElement: app,
-      lane: .defaultLane
-    )
-
-    guard let finishedWork = workInProgress else {
-      return
-    }
-
-    // Commit the changes
-    let deletions = reconciler.getDeletions()
-    commitPhase.commitRoot(finishedWork, deletions: deletions)
-    reconciler.clearDeletions()
-
-    // Update current
-    root.current = finishedWork
   }
 
   // MARK: - Scheduling
@@ -568,6 +546,6 @@ public final class Renderer {
 public private(set) var renderer: Renderer?
 
 /// Initialize the renderer
-public func initRenderer() {
-  renderer = Renderer()
+public func initRenderer(app: (some App).Type) {
+  renderer = Renderer(app: app)
 }

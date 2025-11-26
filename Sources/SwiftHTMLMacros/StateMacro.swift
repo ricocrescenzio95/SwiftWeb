@@ -53,7 +53,6 @@ extension StateMacro: PeerMacro {
     providingPeersOf declaration: some DeclSyntaxProtocol,
     in context: some MacroExpansionContext
   ) throws -> [DeclSyntax] {
-
     guard let varDecl = declaration.as(VariableDeclSyntax.self),
           let binding = varDecl.bindings.first,
           let identifier = binding.pattern.as(IdentifierPatternSyntax.self)?.identifier else {
@@ -76,29 +75,41 @@ extension StateMacro: PeerMacro {
       return []
     }
 
-    // Determine the initial value
-    let initValue: String
-    if let initializer = initializer {
-      initValue = "\(initializer.value)"
-    } else {
-      // No initializer - must be an optional type, use nil
-      initValue = "nil"
+    var isOptional = false
+    if type.as(OptionalTypeSyntax.self) != nil {
+      isOptional = true // T?
+    } else if let simpleType = type.as(IdentifierTypeSyntax.self),
+              simpleType.name.text == "Optional" {
+      isOptional = true // Optional<T>
+    } else if let memberType = type.as(MemberTypeSyntax.self),
+              memberType.baseType.as(IdentifierTypeSyntax.self)?.name.text == "Swift",
+              memberType.name.identifier?.name == "Optional" {
+      isOptional = true // Swift.Optional<T>
     }
-
-    return [
-      // Storage property: _propertyName
-      """
-      private var \(raw: storageName): State<\(type)> = State(wrappedValue: \(raw: initValue))
-      """,
-      // Projected value: $propertyName
+    
+    var members: [DeclSyntax] = []
+    
+    if let initializer = initializer {
+      members.append("private var \(raw: storageName): State<\(type)> = State(wrappedValue: \(initializer.value))")
+    } else if isOptional {
+      members.append("private var \(raw: storageName): State<\(type)> = State(wrappedValue: nil)")
+    } else {
+      members.append("private var \(raw: storageName): State<\(type)>")
+    }
+    
+    // ProjectedValue
+    members.append(
       """
       var \(raw: projectedName): Binding<\(type)> {
         \(raw: storageName).projectedValue
       }
       """
-    ]
+    )
+    
+    return members
   }
 }
+
 
 // MARK: - Validation
 
@@ -113,7 +124,7 @@ private func validateComponentContext(
     if let structDecl = lexicalContext.as(StructDeclSyntax.self) {
       let hasComponentAttribute = structDecl.attributes.contains { attribute in
         guard case let .attribute(attr) = attribute else { return false }
-        return attr.attributeName.as(IdentifierTypeSyntax.self)?.name.text == "Component"
+        return ["Component", "Page"].contains(attr.attributeName.as(IdentifierTypeSyntax.self)?.name.text)
       }
 
       if !hasComponentAttribute {

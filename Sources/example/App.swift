@@ -77,12 +77,12 @@ struct TestApp: App {
       div(.class("box")) {
         h2 { "Event Handler Test" }
         CounterView()
-        button { "Test Click" }
+        button { p { "Test Click" } }
           .onClick {
             print("🎉 Event handler works!")
           }
           .onClick {
-            print("Also second works!")
+            router.push(.productDetail(id: "1", id2: "4"))
           }
         button { isVisible ? "Hide" : "Show" }
           .onClick {
@@ -137,6 +137,20 @@ struct TestApp: App {
       }
     }
   }
+  
+  static var notFound: some Node {
+    body(.class("flex flex-col gap-4 size-full items-center justify-center")) {
+      p(.class("font-medium text-lg")) {
+        "404 - Not Found"
+      }
+      button {
+        "Go back home"
+      }
+      .onClick {
+        router.replace(.root())
+      }
+    }
+  }
 }
 
 @Component
@@ -155,5 +169,22 @@ struct CounterView {
       .onClick {
         count += 1
       }
+  }
+}
+
+@Page(route: "products/\(param: "id")/\(param: "id2")")
+struct ProductDetail: Node {
+  @State var test: Int = 0
+  
+  var content: some Node {
+    div(.class("flex flex-col gap-4")) {
+      "Product with id \(id) \(id2)"
+      button(.class("border rounded cursor-pointer px-2")) {
+        "Go home"
+      }
+      .onClick {
+        router.replace(.root())
+      }
+    }
   }
 }

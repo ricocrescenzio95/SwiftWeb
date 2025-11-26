@@ -12,7 +12,7 @@ echo "👀 Starting SwiftWeb in dev mode..."
 echo "📦 Building Swift package initially..."
 
 # Initial build
-swift package --swift-sdk swift-6.2-RELEASE_wasm js
+swift package --swift-sdk swift-6.2-RELEASE_wasm js --product example
 
 if [ $? -ne 0 ]; then
   echo "❌ Initial Swift build failed!"
@@ -38,7 +38,7 @@ json_escape() {
 # Build Swift with error capture
 build_swift() {
   # Capture stderr to error file
-  swift package --swift-sdk swift-6.2-RELEASE_wasm js 2> "$ERROR_FILE"
+  swift package --swift-sdk swift-6.2-RELEASE_wasm js --product example 2> "$ERROR_FILE"
 
   if [ $? -eq 0 ]; then
     # Build succeeded - write success status

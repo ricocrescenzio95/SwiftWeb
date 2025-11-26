@@ -75,15 +75,20 @@ class GlobalEventHandler {
     eventHandlers[element] = nil
   }
   
-  func triggerEvent(eventName: String, target: JSValue, event: JSValue) {
-    guard let elObj = target.object else { return }
-    guard let handlers = eventHandlers[elObj]?[eventName] else { return }
-    for handler in handlers { handler(event) }
-  }
-  
   func dispatchEvent(_ eventValue: JSValue) {
-    guard let target = eventValue.object?.target, let type = eventValue.type.string else { return }
-    triggerEvent(eventName: type, target: target, event: eventValue)
+    guard let jsEvt = eventValue.object else { return }
+    guard let type = jsEvt.type.string else { return }
+    
+    var current: JSObject? = jsEvt.target.object
+    while let el = current {
+      if let handlers = eventHandlers[el]?[type] {
+        for handler in handlers {
+          handler(eventValue)
+        }
+        return
+      }
+      current = el.parentNode.object
+    }
   }
   
   // MARK: - Event Delegation Setup

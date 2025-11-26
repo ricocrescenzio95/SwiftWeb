@@ -12,6 +12,9 @@ public enum CSS {
   public static func buildArray(_ components: [CSS.Selector]) -> [CSS.Selector] {
     components
   }
+  public static func buildArray(_ components: [[CSS.Selector]]) -> [CSS.Selector] {
+    components.flatMap(\.self)
+  }
   public static func buildOptional(_ component: [CSS.Selector]?) -> [CSS.Selector] {
     component ?? []
   }
