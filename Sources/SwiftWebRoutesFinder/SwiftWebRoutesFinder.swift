@@ -52,7 +52,7 @@ class SwiftWebRoutesFinder {
         )
       } else {
         // Simple case for static routes
-        allCases.append("case \"\(info.route)\": \(info.typeName)()")
+        allCases.append("case \"\(info.route.name)\": \(info.typeName)(context)")
         factoryMethods.append(
           """
           static func \(camelCaseTypeName)() -> PageDestination<\(info.typeName)> {
