@@ -6,15 +6,17 @@ import CompilerPluginSupport
 
 let package = Package(
   name: "swift-web",
-  platforms: [.macOS(.v13)],
+  platforms: [.macOS(.v26)],
   dependencies: [
     .package(url: "https://github.com/swiftlang/swift-syntax", from: "601.0.1"),
     .package(url: "https://github.com/swiftwasm/JavaScriptKit", from: "0.36.0")
   ],
   targets: [
-    .macro(name: "SwiftHTMLMacros", dependencies: [
+    .macro(name: "SwiftWebMacros", dependencies: [
       .product(name: "SwiftSyntaxMacros", package: "swift-syntax"),
-      .product(name: "SwiftCompilerPlugin", package: "swift-syntax")
+      .product(name: "SwiftCompilerPlugin", package: "swift-syntax"),
+      .product(name: "SwiftSyntax", package: "swift-syntax"),
+      .product(name: "SwiftParser", package: "swift-syntax"),
     ]),
     .executableTarget(
       name: "SwiftWebRoutesFinder",
@@ -25,13 +27,13 @@ let package = Package(
     ),
     .plugin(name: "SwiftWebRoutesFinderPlugin", capability: .buildTool(), dependencies: ["SwiftWebRoutesFinder"]),
     .target(name: "SwiftHTML"),
-    .target(name: "SwiftWeb", dependencies: ["SwiftHTML", "JavaScriptKit", "SwiftHTMLMacros"], swiftSettings: [.defaultIsolation(MainActor.self)]),
+    .target(name: "SwiftWeb", dependencies: ["SwiftHTML", "JavaScriptKit", "SwiftWebMacros"], swiftSettings: [.defaultIsolation(MainActor.self)]),
     .executableTarget(
       name: "example",
       dependencies: ["SwiftWeb", "JavaScriptKit"],
       swiftSettings: [.defaultIsolation(MainActor.self)],
       linkerSettings: [
-        // Aumenta la memoria WASM stack size
+        // Increase WASM stack size
         .unsafeFlags(["-Xlinker", "-z", "-Xlinker", "stack-size=16777216"], .when(platforms: [.wasi]))
       ],
       plugins: [.plugin(name: "SwiftWebRoutesFinderPlugin")],
